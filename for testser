@@ -1,1251 +1,1218 @@
--- ╔══════════════════════════════════════════════════════════════╗
--- ║               AETHEL HUB — FULL COMBINED SCRIPT             ║
--- ║  Sources: Kali_Hub · Latest · QBSource · QBPerfectBeam       ║
--- ║           Trajectory · KickerAimbot · KickExtender           ║
--- ║           TackleAimbot · NoJumpCooldown · Anti-Lag            ║
--- ║  BUILD: v11 — physics lead prediction · lead sliders fixed       ║
--- ╚══════════════════════════════════════════════════════════════╝
-
+-- Kasen Hub v1 | Football Fusion 2
 repeat task.wait() until game:IsLoaded()
 
 -- ================================================================
 -- KEY SYSTEM
 -- ================================================================
 do
-    local VALID_KEY  = "Aethelhubis#1"
-    local Players_ks = game:GetService("Players")
-    local UIS_ks     = game:GetService("UserInputService")
-    local lp         = Players_ks.LocalPlayer
-    local pg         = lp:WaitForChild("PlayerGui")
+    -- ================================================================
+    -- KASEN HUB KEY SYSTEM
+    -- Keys activate on FIRST USE and start counting down from that moment.
+    -- The expiry timestamp is saved locally on the user's machine.
+    --
+    -- KEY TYPES:
+    --   KSN-M-xxxxx  =  30 days  (Monthly)
+    --   KSN-L-xxxxx  =  Lifetime (100 years)
+    --   KSN-W-xxxxx  =  7 days
+    --
+    -- TO ADD A NEW KEY: copy any line and change the key string
+    -- TO REVOKE: delete the line and repost the script
+    -- ================================================================
 
-    -- Build key GUI
+    local KEYS = {
+        -- YOUR DEV KEY (never expires)
+        ["KASEN-DEV-LOCAL"]   = {days=36500, label="Dev"},
+
+        -- 30 MONTHLY KEYS (30 days on first use)
+        ["KSN-M-LBNY4G-L9VZM8-LA8AIM"] = {days=30,  label="Monthly"},
+        ["KSN-M-0WYU6I-P7EBRT-C5PGPX"] = {days=30,  label="Monthly"},
+        ["KSN-M-J7ZR1F-OBO99O-FWYFZS"] = {days=30,  label="Monthly"},
+        ["KSN-M-7STD46-UMU24Y-0HE6MS"] = {days=30,  label="Monthly"},
+        ["KSN-M-VPDMVK-TXZYEE-8HVTFH"] = {days=30,  label="Monthly"},
+        ["KSN-M-HLXQXO-JFUBQR-AM26KN"] = {days=30,  label="Monthly"},
+        ["KSN-M-T6TUDY-PZ9XAA-NSAXHA"] = {days=30,  label="Monthly"},
+        ["KSN-M-W7SGPH-SNTFIJ-4TN11Z"] = {days=30,  label="Monthly"},
+        ["KSN-M-JE7M6U-4X92IC-XR9CWV"] = {days=30,  label="Monthly"},
+        ["KSN-M-TESWFX-C8V38Y-U98EWF"] = {days=30,  label="Monthly"},
+        ["KSN-M-B21RQL-PG4AJ8-23S009"] = {days=30,  label="Monthly"},
+        ["KSN-M-R3U3NR-N9GL7I-8L873C"] = {days=30,  label="Monthly"},
+        ["KSN-M-O6719T-96FM3I-K3A5XW"] = {days=30,  label="Monthly"},
+        ["KSN-M-R0O69L-WC5PV3-FH8ENH"] = {days=30,  label="Monthly"},
+        ["KSN-M-G7V6YP-USPHVY-I4F82P"] = {days=30,  label="Monthly"},
+        ["KSN-M-OSLR11-DG83BN-0W5J3J"] = {days=30,  label="Monthly"},
+        ["KSN-M-79YISM-OL0W5D-UU0SJU"] = {days=30,  label="Monthly"},
+        ["KSN-M-HJRD1R-3P8ISD-03X4XF"] = {days=30,  label="Monthly"},
+        ["KSN-M-5VJ7QH-55BT8X-FHQO2E"] = {days=30,  label="Monthly"},
+        ["KSN-M-J98C9U-FUVRNQ-5CRJ7K"] = {days=30,  label="Monthly"},
+        ["KSN-M-WHFFO9-FLU508-S8C2WO"] = {days=30,  label="Monthly"},
+        ["KSN-M-07RBBN-EV80EF-G6DISM"] = {days=30,  label="Monthly"},
+        ["KSN-M-9WC468-KBP4C1-T6S9AD"] = {days=30,  label="Monthly"},
+        ["KSN-M-GA3QMS-FYE9OJ-RH1SOO"] = {days=30,  label="Monthly"},
+        ["KSN-M-V10QCG-HMW14E-THXB9Q"] = {days=30,  label="Monthly"},
+        ["KSN-M-W0YL95-K1ZQUL-PPDH2F"] = {days=30,  label="Monthly"},
+        ["KSN-M-XJOO7J-DUS30H-60JF5Q"] = {days=30,  label="Monthly"},
+        ["KSN-M-XJ0021-Z7H37G-69KSI9"] = {days=30,  label="Monthly"},
+        ["KSN-M-8PWUAR-BPT05F-W9XU8T"] = {days=30,  label="Monthly"},
+        ["KSN-M-WJWPWT-7DBS6O-3X6K67"] = {days=30,  label="Monthly"},
+        -- 5 LIFETIME KEYS (100 years)
+        ["KSN-L-2JMPDG-UFI64G-40FIGS"] = {days=36500, label="Lifetime"},
+        ["KSN-L-8P4DKR-U25SAM-J58AC4"] = {days=36500, label="Lifetime"},
+        ["KSN-L-SJMQS8-NBS90Q-XG21JU"] = {days=36500, label="Lifetime"},
+        ["KSN-L-7YGO7Z-CN3SID-YW6FWE"] = {days=36500, label="Lifetime"},
+        ["KSN-L-0822K0-MPJ3MA-HLVI9W"] = {days=36500, label="Lifetime"},
+        -- 60 WEEKLY KEYS (7 days on first use)
+        ["KSN-W-CN8JN9-AEXKKK-OZ9Z9E"] = {days=7,    label="7-Day"},
+        ["KSN-W-4BCFS9-GD9W6I-KLP1CS"] = {days=7,    label="7-Day"},
+        ["KSN-W-C72JOX-VZL20A-ZVSKPK"] = {days=7,    label="7-Day"},
+        ["KSN-W-W352CF-8TYFWC-3H5I4Q"] = {days=7,    label="7-Day"},
+        ["KSN-W-XD7FXP-M9NVWI-I02EPI"] = {days=7,    label="7-Day"},
+        ["KSN-W-CHNLKH-GFNK0W-3U5EXW"] = {days=7,    label="7-Day"},
+        ["KSN-W-TIW3H6-H7B2CC-3YICU6"] = {days=7,    label="7-Day"},
+        ["KSN-W-AYW4FA-L0IYA0-4GMCD2"] = {days=7,    label="7-Day"},
+        ["KSN-W-HOULK1-7VROLO-FRYGLT"] = {days=7,    label="7-Day"},
+        ["KSN-W-JGBHZA-96MVFU-D5N5FG"] = {days=7,    label="7-Day"},
+        ["KSN-W-A03098-16R561-C78LPK"] = {days=7,    label="7-Day"},
+        ["KSN-W-WITJEF-B0D13F-Y3YS19"] = {days=7,    label="7-Day"},
+        ["KSN-W-FZ3HXS-H0WLFJ-SK23VD"] = {days=7,    label="7-Day"},
+        ["KSN-W-4Z4VSH-7XFHU3-SYAVIZ"] = {days=7,    label="7-Day"},
+        ["KSN-W-8KQCTZ-3C9KDB-X8ECT7"] = {days=7,    label="7-Day"},
+        ["KSN-W-J1R5LD-FENYM5-44JHRU"] = {days=7,    label="7-Day"},
+        ["KSN-W-LMFQTE-D76AS3-OYFVSP"] = {days=7,    label="7-Day"},
+        ["KSN-W-7ZASOQ-IMNKDI-MHSSQ5"] = {days=7,    label="7-Day"},
+        ["KSN-W-K3KBYV-YOKQ78-19JEQ9"] = {days=7,    label="7-Day"},
+        ["KSN-W-0LKEYT-RU9T3I-WRP4AS"] = {days=7,    label="7-Day"},
+        ["KSN-W-27XN61-XLDFEM-LE5UWA"] = {days=7,    label="7-Day"},
+        ["KSN-W-MXCGJQ-SW8E9I-VF2QS4"] = {days=7,    label="7-Day"},
+        ["KSN-W-4QKVF1-6QG2V4-0RNR3K"] = {days=7,    label="7-Day"},
+        ["KSN-W-2QN8OQ-F5HZ5F-YSKYL9"] = {days=7,    label="7-Day"},
+        ["KSN-W-PXPYW0-M8HLX7-W8NUHB"] = {days=7,    label="7-Day"},
+        ["KSN-W-7JXCYI-Z12QJO-6K45VI"] = {days=7,    label="7-Day"},
+        ["KSN-W-R79GCF-LRLV88-HWBNN1"] = {days=7,    label="7-Day"},
+        ["KSN-W-6FVU5J-TIZ6J7-4W08ZG"] = {days=7,    label="7-Day"},
+        ["KSN-W-9IZNAL-2FNRJG-WXBE8F"] = {days=7,    label="7-Day"},
+        ["KSN-W-4Z93HF-EF32ID-OJGRD4"] = {days=7,    label="7-Day"},
+        ["KSN-W-SEW4ZJ-PTV80Y-KCM1II"] = {days=7,    label="7-Day"},
+        ["KSN-W-UYTAAH-UL4G8R-UXT0ON"] = {days=7,    label="7-Day"},
+        ["KSN-W-YM58YW-F5XQ2S-NOVNYR"] = {days=7,    label="7-Day"},
+        ["KSN-W-I5B1L6-4UOZYD-PINTXM"] = {days=7,    label="7-Day"},
+        ["KSN-W-95JXO1-C6KOUJ-1L6IC8"] = {days=7,    label="7-Day"},
+        ["KSN-W-L7U5SH-C74O8I-ZMFF0D"] = {days=7,    label="7-Day"},
+        ["KSN-W-42VBFD-27KLNP-Z05F5N"] = {days=7,    label="7-Day"},
+        ["KSN-W-LLPBD3-BCQH6V-O4MHOJ"] = {days=7,    label="7-Day"},
+        ["KSN-W-ISBEII-MSYN0G-ADISN9"] = {days=7,    label="7-Day"},
+        ["KSN-W-T2W9J2-OO8LY8-LT9L52"] = {days=7,    label="7-Day"},
+        ["KSN-W-HQ4SOZ-A9LUJ3-OCWI9C"] = {days=7,    label="7-Day"},
+        ["KSN-W-ELJQ19-1FOI4M-L4G8BP"] = {days=7,    label="7-Day"},
+        ["KSN-W-YAHZRO-V4NFF0-63OESG"] = {days=7,    label="7-Day"},
+        ["KSN-W-29F9RZ-GZ5POY-C3FY7X"] = {days=7,    label="7-Day"},
+        ["KSN-W-W95TDD-IVM83X-T21FGI"] = {days=7,    label="7-Day"},
+        ["KSN-W-6PS7NB-CF8FPZ-36QR8F"] = {days=7,    label="7-Day"},
+        ["KSN-W-ACRG7B-1Y9XIS-ZG7KAR"] = {days=7,    label="7-Day"},
+        ["KSN-W-ZOCGS5-URETJV-HEF2UX"] = {days=7,    label="7-Day"},
+        ["KSN-W-7HZ84N-P8U7GK-LC6VEM"] = {days=7,    label="7-Day"},
+        ["KSN-W-ZWHQNV-8SB0TV-4RNBA7"] = {days=7,    label="7-Day"},
+        ["KSN-W-RZTI6Q-VF25QE-NRIZEQ"] = {days=7,    label="7-Day"},
+        ["KSN-W-OWUZH3-NUHH4K-WTR0NQ"] = {days=7,    label="7-Day"},
+        ["KSN-W-33MISV-4T25W0-4A00KE"] = {days=7,    label="7-Day"},
+        ["KSN-W-BTQG7M-73U0MV-O9XIGT"] = {days=7,    label="7-Day"},
+        ["KSN-W-FLXB46-7Q4ZLX-DMI8PW"] = {days=7,    label="7-Day"},
+        ["KSN-W-N525QB-0SL7J0-3VIAY4"] = {days=7,    label="7-Day"},
+        ["KSN-W-9PWCF5-OCDGKG-UEPH46"] = {days=7,    label="7-Day"},
+        ["KSN-W-XHF59Z-52YEWT-XIBFHV"] = {days=7,    label="7-Day"},
+        ["KSN-W-9FDQOP-8RYUTW-TG6S3C"] = {days=7,    label="7-Day"},
+        ["KSN-W-3L6GI0-CZQAM7-3C4E0W"] = {days=7,    label="7-Day"},
+    }
+
+    -- Save file name (stored on user PC via writefile)
+    local SAVE_FILE = "kasen_hub_keys.json"
+
+    local http  = game:GetService("HttpService")
+    local lp    = game:GetService("Players").LocalPlayer
+    local pg    = lp:WaitForChild("PlayerGui")
+
+    -- ?? Persistence helpers ????????????????????????????????????????????????
+    -- activations = { [key] = unixTimestampOfExpiry }
+    local function loadActivations()
+        local ok, data = pcall(function()
+            return http:JSONDecode(readfile(SAVE_FILE))
+        end)
+        return (ok and type(data)=="table") and data or {}
+    end
+
+    local function saveActivations(t)
+        pcall(function() writefile(SAVE_FILE, http:JSONEncode(t)) end)
+    end
+
+    -- os.time() equivalent in Roblox: tick() gives Unix time as float
+    local function now() return math.floor(tick()) end
+    local function daysToSec(d) return d * 86400 end
+
+    -- ?? UI ?????????????????????????????????????????????????????????????????
     local sg = Instance.new("ScreenGui")
-    sg.Name            = "AethelKeyGui"
-    sg.ResetOnSpawn    = false
-    sg.IgnoreGuiInset  = true
-    sg.DisplayOrder    = 999
-    sg.Parent          = pg
+    sg.Name="KasenKeyGui"; sg.ResetOnSpawn=false
+    sg.IgnoreGuiInset=true; sg.DisplayOrder=9998; sg.Parent=pg
 
-    -- Blurred dark overlay
-    local overlay = Instance.new("Frame", sg)
-    overlay.Size              = UDim2.new(1,0,1,0)
-    overlay.BackgroundColor3  = Color3.fromRGB(6,6,10)
-    overlay.BackgroundTransparency = 0.25
-    overlay.BorderSizePixel   = 0
+    local bg = Instance.new("Frame",sg)
+    bg.Size=UDim2.new(1,0,1,0); bg.BackgroundColor3=Color3.fromRGB(0,0,0)
+    bg.BackgroundTransparency=0.5; bg.BorderSizePixel=0
 
-    -- Card
-    local card = Instance.new("Frame", sg)
-    card.Size             = UDim2.new(0, 360, 0, 220)
-    card.AnchorPoint      = Vector2.new(0.5, 0.5)
-    card.Position         = UDim2.new(0.5, 0, 0.5, 0)
-    card.BackgroundColor3 = Color3.fromRGB(10, 10, 16)
-    card.BorderSizePixel  = 0
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 16)
-    local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Color = Color3.fromRGB(100, 105, 231); cardStroke.Thickness = 2
+    local kf = Instance.new("Frame",sg)
+    kf.AnchorPoint=Vector2.new(0.5,0.5)
+    kf.Position=UDim2.new(0.5,0,0.5,0); kf.Size=UDim2.new(0,340,0,280)
+    kf.BackgroundColor3=Color3.fromRGB(14,14,22); kf.BorderSizePixel=0
+    Instance.new("UICorner",kf).CornerRadius=UDim.new(0,14)
+    local stroke=Instance.new("UIStroke",kf)
+    stroke.Color=Color3.fromRGB(88,60,210); stroke.Thickness=1.5
 
-    -- Title
-    local title = Instance.new("TextLabel", card)
-    title.Size              = UDim2.new(1,-20,0,36)
-    title.Position          = UDim2.new(0,10,0,14)
-    title.BackgroundTransparency = 1
-    title.Text              = "✦  Aethel Hub"
-    title.TextColor3        = Color3.fromRGB(130,140,255)
-    title.Font              = Enum.Font.GothamBold
-    title.TextSize          = 22
-    title.TextXAlignment    = Enum.TextXAlignment.Center
+    local function lbl(txt,y,sz,bold,col)
+        local l=Instance.new("TextLabel",kf); l.BackgroundTransparency=1
+        l.Position=UDim2.new(0,0,0,y); l.Size=UDim2.new(1,0,0,sz or 28)
+        l.Font=bold and Enum.Font.GothamBold or Enum.Font.Gotham
+        l.Text=txt; l.TextColor3=col or Color3.fromRGB(255,255,255)
+        l.TextSize=sz or 14; l.TextXAlignment=Enum.TextXAlignment.Center; return l
+    end
 
-    -- Subtitle
-    local sub = Instance.new("TextLabel", card)
-    sub.Size             = UDim2.new(1,-20,0,20)
-    sub.Position         = UDim2.new(0,10,0,50)
-    sub.BackgroundTransparency = 1
-    sub.Text             = "Enter your key to continue"
-    sub.TextColor3       = Color3.fromRGB(160,160,180)
-    sub.Font             = Enum.Font.Gotham
-    sub.TextSize         = 13
-    sub.TextXAlignment   = Enum.TextXAlignment.Center
+    lbl("Kasen Hub",14,24,true,Color3.fromRGB(255,255,255))
+    lbl("Football Fusion 2",42,12,false,Color3.fromRGB(130,110,230))
+    lbl("Enter your key below",62,13,false,Color3.fromRGB(155,155,170))
 
-    -- Input box
-    local box = Instance.new("TextBox", card)
-    box.Size              = UDim2.new(1,-40,0,42)
-    box.Position          = UDim2.new(0,20,0,82)
-    box.BackgroundColor3  = Color3.fromRGB(18,18,28)
-    box.BorderSizePixel   = 0
-    box.Text              = ""
-    box.PlaceholderText   = "Paste key here..."
-    box.PlaceholderColor3 = Color3.fromRGB(90,90,110)
-    box.TextColor3        = Color3.fromRGB(220,220,240)
-    box.Font              = Enum.Font.GothamBold
-    box.TextSize          = 15
-    box.ClearTextOnFocus  = false
-    box.TextXAlignment    = Enum.TextXAlignment.Center
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 10)
-    local boxStroke = Instance.new("UIStroke", box)
-    boxStroke.Color = Color3.fromRGB(60,60,90); boxStroke.Thickness = 1.5
+    local box=Instance.new("TextBox",kf)
+    box.BackgroundColor3=Color3.fromRGB(24,24,38); box.BorderSizePixel=0
+    box.Position=UDim2.new(0,18,0,88); box.Size=UDim2.new(1,-36,0,44)
+    box.Font=Enum.Font.GothamBold; box.PlaceholderText="KSN-X-XXXXXX-XXXXXX-XXXXXX"
+    box.PlaceholderColor3=Color3.fromRGB(85,85,105); box.Text=""
+    box.TextColor3=Color3.fromRGB(215,215,240); box.TextSize=13
+    box.ClearTextOnFocus=false; box.TextXAlignment=Enum.TextXAlignment.Center
+    Instance.new("UICorner",box).CornerRadius=UDim.new(0,8)
+    Instance.new("UIStroke",box).Color=Color3.fromRGB(55,50,95)
 
-    -- Status label
-    local status = Instance.new("TextLabel", card)
-    status.Size             = UDim2.new(1,-20,0,18)
-    status.Position         = UDim2.new(0,10,0,130)
-    status.BackgroundTransparency = 1
-    status.Text             = ""
-    status.TextColor3       = Color3.fromRGB(220,80,80)
-    status.Font             = Enum.Font.Gotham
-    status.TextSize         = 12
-    status.TextXAlignment   = Enum.TextXAlignment.Center
+    local status=lbl("",146,13,false,Color3.fromRGB(200,70,70))
 
-    -- Confirm button
-    local btn = Instance.new("TextButton", card)
-    btn.Size              = UDim2.new(1,-40,0,42)
-    btn.Position          = UDim2.new(0,20,0,155)
-    btn.BackgroundColor3  = Color3.fromRGB(80,85,210)
-    btn.BorderSizePixel   = 0
-    btn.Text              = "Confirm"
-    btn.TextColor3        = Color3.fromRGB(255,255,255)
-    btn.Font              = Enum.Font.GothamBold
-    btn.TextSize          = 15
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    -- Sub-label showing key type + time remaining after valid check
+    local timeLabel=lbl("",164,12,false,Color3.fromRGB(100,100,120))
+
+    local btn=Instance.new("TextButton",kf)
+    btn.BackgroundColor3=Color3.fromRGB(78,52,200); btn.BorderSizePixel=0
+    btn.Position=UDim2.new(0,18,0,186); btn.Size=UDim2.new(1,-36,0,50)
+    btn.Font=Enum.Font.GothamBold; btn.Text="Confirm Key"
+    btn.TextColor3=Color3.fromRGB(255,255,255); btn.TextSize=15
+    Instance.new("UICorner",btn).CornerRadius=UDim.new(0,9)
+    Instance.new("UIStroke",btn).Color=Color3.fromRGB(115,85,245)
+
+    lbl("Keys start counting on first use",244,11,false,Color3.fromRGB(75,75,95))
+
+    -- ?? Helpers ????????????????????????????????????????????????????????????
+    local function fmtTime(secondsLeft)
+        if secondsLeft >= 86400*365*50 then return "Lifetime" end
+        local d = math.floor(secondsLeft / 86400)
+        local h = math.floor((secondsLeft % 86400) / 3600)
+        if d > 0 then return d.."d "..h.."h remaining" end
+        local m = math.floor((secondsLeft % 3600) / 60)
+        return h.."h "..m.."m remaining"
+    end
+
+    local function shake()
+        local orig=kf.Position
+        for i=1,8 do
+            kf.Position=UDim2.new(0.5,(i%2==0 and 8 or -8),0.5,0)
+            task.wait(0.032)
+        end
+        kf.Position=orig
+    end
 
     local validated = false
 
+    local function acceptKey(keyDef, secondsLeft)
+        validated = true
+        local tag = keyDef.label.." key"
+        status.TextColor3=Color3.fromRGB(70,225,115)
+        status.Text="Key accepted! ("..tag..")"
+        timeLabel.TextColor3=Color3.fromRGB(90,180,90)
+        timeLabel.Text=fmtTime(secondsLeft)
+        btn.BackgroundColor3=Color3.fromRGB(38,168,78)
+        btn.Text="Loading..."
+        task.wait(0.9); sg:Destroy(); bg:Destroy()
+    end
+
     local function tryKey()
-        local input = box.Text:gsub("^%s+", ""):gsub("%s+$", "")
-        if input == VALID_KEY then
-            validated = true
-            status.TextColor3 = Color3.fromRGB(80,220,120)
-            status.Text = "✓  Key accepted — loading..."
-            btn.BackgroundColor3 = Color3.fromRGB(50,180,90)
-            task.wait(0.8)
-            sg:Destroy()
-        else
-            status.TextColor3 = Color3.fromRGB(220,80,80)
-            status.Text = "✗  Invalid key. Try again."
-            -- Shake card
-            local orig = card.Position
-            for i = 1, 6 do
-                card.Position = UDim2.new(orig.X.Scale, orig.X.Offset + (i%2==0 and 6 or -6),
-                                          orig.Y.Scale, orig.Y.Offset)
-                task.wait(0.04)
+        local key = box.Text:match("^%s*(.-)%s*$"):upper()
+        if key=="" then
+            status.TextColor3=Color3.fromRGB(220,80,80)
+            status.Text="Enter a key first."
+            return
+        end
+
+        local keyDef = KEYS[key]
+        if not keyDef then
+            status.TextColor3=Color3.fromRGB(220,80,80)
+            status.Text="Invalid key."
+            timeLabel.Text=""
+            shake()
+            return
+        end
+
+        -- Load saved activations
+        local acts = loadActivations()
+        local n = now()
+
+        if acts[key] then
+            -- Key was used before - check if still valid
+            local expiresAt = acts[key]
+            local secondsLeft = expiresAt - n
+            if secondsLeft > 0 then
+                acceptKey(keyDef, secondsLeft)
+            else
+                -- Expired
+                acts[key] = nil
+                saveActivations(acts)
+                status.TextColor3=Color3.fromRGB(220,160,40)
+                status.Text="Key expired. Purchase a renewal."
+                timeLabel.TextColor3=Color3.fromRGB(150,100,30)
+                timeLabel.Text=keyDef.label.." key"
+                shake()
             end
-            card.Position = orig
+        else
+            -- First use - activate now, stamp expiry
+            local expiresAt = n + daysToSec(keyDef.days)
+            acts[key] = expiresAt
+            saveActivations(acts)
+            acceptKey(keyDef, daysToSec(keyDef.days))
         end
     end
 
     btn.MouseButton1Click:Connect(tryKey)
     box.FocusLost:Connect(function(enter) if enter then tryKey() end end)
-
-    -- Block everything until validated
     repeat task.wait(0.05) until validated
 end
 
 -- ================================================================
--- SECTION 1 — SERVICES & GLOBALS
+-- SERVICES
 -- ================================================================
-local Players           = game:GetService("Players")
-local RunService        = game:GetService("RunService")
-local UserInputService  = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService      = game:GetService("TweenService")
-local TestService       = game:GetService("TestService")
-local VIM               = game:GetService("VirtualInputManager")
-local CoreGui           = game:GetService("CoreGui")
-local Workspace         = game:GetService("Workspace")
-local Camera            = Workspace.CurrentCamera
+local Players   = game:GetService("Players")
+local RunService= game:GetService("RunService")
+local UIS       = game:GetService("UserInputService")
+local RS        = game:GetService("ReplicatedStorage")
+local TS        = game:GetService("TweenService")
+local VIM       = game:GetService("VirtualInputManager")
+local CoreGui   = game:GetService("CoreGui")
+local WS        = game:GetService("Workspace")
+local Camera    = WS.CurrentCamera
 
-local cloneref = cloneref or function(v) return v end
-
-local Player = Players.LocalPlayer
-while not Player do Player = Players.LocalPlayer task.wait() end
-
-local Char = Player.Character or Player.CharacterAdded:Wait()
-local Hum  = cloneref(Char:WaitForChild("Humanoid"))
-local Hrp  = cloneref(Char:WaitForChild("HumanoidRootPart"))
-local mouse = Player:GetMouse()
-
-Player.CharacterAdded:Connect(function(c)
-    Char = c
-    Hrp  = c:WaitForChild("HumanoidRootPart")
-    Hum  = c:WaitForChild("Humanoid")
-end)
+local cloneref  = cloneref or function(v) return v end
+local Player    = Players.LocalPlayer
+while not Player do Player=Players.LocalPlayer; task.wait() end
+local Char=Player.Character or Player.CharacterAdded:Wait()
+local Hum =cloneref(Char:WaitForChild("Humanoid"))
+local Hrp =cloneref(Char:WaitForChild("HumanoidRootPart"))
+Player.CharacterAdded:Connect(function(c) Char=c; Hrp=c:WaitForChild("HumanoidRootPart"); Hum=c:WaitForChild("Humanoid") end)
 
 -- ================================================================
--- SECTION 2 — AC BYPASS (Delta-compatible rewrite)
+-- AC BYPASS
 -- ================================================================
 do
-    -- Safe helper: only call executor funcs if they exist
-    local function safeHook(original, replacement)
-        if typeof(hookfunction) ~= "function" then return end
-        pcall(hookfunction, original, newcclosure and newcclosure(replacement) or replacement)
-    end
-
-    local function safeGetgc()
-        if typeof(getgc) ~= "function" then return {} end
-        local ok, r = pcall(getgc, true)
-        return (ok and type(r) == "table") and r or {}
-    end
-
-    -- 1) Spoof debug.info so our script reports as a normal LocalScript
-    pcall(function()
-        if typeof(hookfunction) ~= "function" or typeof(debug) ~= "table" then return end
-        local orig_debug_info = debug.info
-        safeHook(debug.info, function(level, flags)
-            if level == 2 and flags == "s" then return "LocalScript" end
-            return orig_debug_info(level, flags)
-        end)
-    end)
-
-    -- 2) Nullify the AC integrity checker (targets functions with known magic constant)
-    pcall(function()
-        local gc = safeGetgc()
-        for _, v in pairs(gc) do
-            if type(v) == "function"
-            and typeof(islclosure) == "function" and islclosure(v)
-            and typeof(isexecutorclosure) == "function" and not isexecutorclosure(v) then
-                local ok, consts = pcall(function()
-                    local p = getprotos and getprotos(v)
-                    return p and #p == 1 and getconstants and getconstants(p[1])
-                end)
-                if ok and consts then
-                    for _, c in pairs(consts) do
-                        if type(c) == "number" and c > 1000000 and c < 10000000 then
-                            pcall(hookfunction, v, newcclosure and newcclosure(function() end) or function() end)
-                            break
-                        end
-                    end
-                end
-            end
-        end
-    end)
-
-    -- 3) Block the AC's sound-based detection channel
-    pcall(function()
-        local remotes = ReplicatedStorage:FindFirstChild("Remotes")
-        local remote  = remotes and remotes:FindFirstChild("CharacterSoundEvent")
-        if not remote or typeof(hookfunction) ~= "function" then return end
-        local oldFire = remote.FireServer
-        hookfunction(remote.FireServer, newcclosure(function(self, ...)
-            local args = {...}
-            if type(args[1]) == "string" and #args[1] > 20 then
-                if args[2] == "b51b07a5c14d" or args[2] == "error" then return end
-            end
-            return oldFire(self, ...)
-        end))
-    end)
-
-    _G.b51b07a5c14d = false
-
-    task.wait(0.5)
-    print("[Aethel Hub] AC bypass applied (Delta build)")
+    local function sh(orig,rep) if typeof(hookfunction)~="function" then return end pcall(hookfunction,orig,newcclosure and newcclosure(rep) or rep) end
+    local function sgc() if typeof(getgc)~="function" then return {} end local ok,r=pcall(getgc,true); return (ok and type(r)=="table") and r or {} end
+    pcall(function() if typeof(hookfunction)~="function" or typeof(debug)~="table" then return end local orig=debug.info; sh(debug.info,function(l,f) if l==2 and f=="s" then return "LocalScript" end return orig(l,f) end) end)
+    pcall(function() for _,v in pairs(sgc()) do if type(v)=="function" and typeof(islclosure)=="function" and islclosure(v) and typeof(isexecutorclosure)=="function" and not isexecutorclosure(v) then local ok,c=pcall(function() local p=getprotos and getprotos(v); return p and #p==1 and getconstants and getconstants(p[1]) end); if ok and c then for _,cv in pairs(c) do if type(cv)=="number" and cv>1000000 and cv<10000000 then pcall(hookfunction,v,newcclosure and newcclosure(function()end) or function()end); break end end end end end end)
+    pcall(function() local rem=RS:FindFirstChild("Remotes") and RS.Remotes:FindFirstChild("CharacterSoundEvent"); if not rem or typeof(hookfunction)~="function" then return end local old=rem.FireServer; hookfunction(rem.FireServer,newcclosure(function(s,...) local a={...}; if type(a[1])=="string" and #a[1]>20 and (a[2]=="b51b07a5c14d" or a[2]=="error") then return end return old(s,...) end)) end)
+    _G.b51b07a5c14d=false; task.wait(0.5)
 end
 
 -- ================================================================
--- SECTION 3 — SHARED BEAM HELPER
+-- BEAM HELPER
 -- ================================================================
-local function beamProjectile(g, v0, x0, t1)
-    local c  = 0.5 * 0.5 * 0.5
-    local p3 = 0.5*g*t1*t1 + v0*t1 + x0
-    local p2 = p3 - (g*t1*t1 + v0*t1)/3
-    local p1 = (c*g*t1*t1 + 0.5*v0*t1 + x0 - c*(x0+p3))/(3*c) - p2
-    local curve0 = (p1 - x0).Magnitude
-    local curve1 = (p2 - p3).Magnitude
-    local b  = (x0 - p3).Unit
-    local r1 = (p1 - x0).Unit
-    local u1 = r1:Cross(b).Unit
-    local r2 = (p2 - p3).Unit
-    local u2 = r2:Cross(b).Unit
-    b = u1:Cross(r1).Unit
-    local cf1 = CFrame.new(x0.X,x0.Y,x0.Z, r1.X,u1.X,b.X, r1.Y,u1.Y,b.Y, r1.Z,u1.Z,b.Z)
-    local cf2 = CFrame.new(p3.X,p3.Y,p3.Z, r2.X,u2.X,b.X, r2.Y,u2.Y,b.Y, r2.Z,u2.Z,b.Z)
-    return curve0, -curve1, cf1, cf2
+local function beamProj(g,v0,x0,t1)
+    local c=0.5*0.5*0.5; local p3=0.5*g*t1*t1+v0*t1+x0; local p2=p3-(g*t1*t1+v0*t1)/3
+    local p1=(c*g*t1*t1+0.5*v0*t1+x0-c*(x0+p3))/(3*c)-p2
+    local c0=(p1-x0).Magnitude; local c1=(p2-p3).Magnitude
+    local b=(x0-p3).Unit; local r1=(p1-x0).Unit; local u1=r1:Cross(b).Unit
+    local r2=(p2-p3).Unit; local u2=r2:Cross(b).Unit; b=u1:Cross(r1).Unit
+    return c0,-c1,CFrame.new(x0.X,x0.Y,x0.Z,r1.X,u1.X,b.X,r1.Y,u1.Y,b.Y,r1.Z,u1.Z,b.Z),CFrame.new(p3.X,p3.Y,p3.Z,r2.X,u2.X,b.X,r2.Y,u2.Y,b.Y,r2.Z,u2.Z,b.Z)
 end
 
--- SECTION 4 — QB AIMBOT (improved: better physics, mobile, controller)
 -- ================================================================
+-- QB AIMBOT
+-- Improvements v2:
+-- * Iterative prediction: solve -> re-predict 3 times for tight accuracy
+-- * Velocity smoothing uses per-frame EMA with adaptive gain (fast when vel changes a lot)
+-- * qb_gMag exposed per throw-type so lobs use lower gravity feel (higher arc)
+-- * Angle solver now steps by 0.5deg instead of 1deg for finer resolution
+-- * qbExec always re-solves fresh at fire time (not stale RenderStepped calc)
+-- * qbDoThrow uses actual head pos at fire moment, not cached
+-- * Auto-power reads game bar as first priority when enabled = false
+-- * Anti-overthrow clamp: if solved power > 92, walk angle up to bring it down
+-- * Target selector: prefers closest-to-camera AND closest in distance (blended)
+-- ================================================================
+local qbEnabled=false
+local qb_autoAngle=false
+local qb_antiOOB=false
+local qb_gMag=19.6
+local qb_manualAngle=25
+local qb_lockedTarget=nil
+local qb_lockedPlayer=nil
 
--- ── Config ────────────────────────────────────────────────────────
-local qbEnabled         = true
-local qb_autoAngle      = true
-local qb_antiOOB        = true
-local qb_autoPower      = true
-local qb_gMag           = 28
-local qb_manualAngle    = 25   -- used when autoAngle is off
-local qb_lockedTarget   = nil  -- explicit lock via controller B / touch lock button
-
-local qb_PassMode = {
-    Dime   = {leadDistance = 4.95, angleMin = 5,  angleMax = 45, step = 0.25},
-    Mag    = {leadDistance = 6.5,  angleMin = 5,  angleMax = 45, step = 0.25},
-    Dive   = {leadDistance = 5.8,  angleMin = 5,  angleMax = 45, step = 0.25},
-    Jump   = {leadDistance = 4.5,  angleMin = 5,  angleMax = 45, step = 0.25},
-    Slant  = {leadDistance = 5.0,  angleMin = 5,  angleMax = 12, step = 0.25},
-    Bullet = {leadDistance = 5.05, angleMin = 3,  angleMax = 20, step = 0.25},
-    Lob    = {leadDistance = 5.5,  angleMin = 35, angleMax = 60, step = 0.25},
-    Screen = {leadDistance = 3.5,  angleMin = 5,  angleMax = 20, step = 0.25},
+-- angle ranges and gravity overrides per mode
+-- {minAngle, maxAngle, gravScale}  gravScale: lob floats more, bullet drops hard
+local qb_PM={
+    Dime   ={10,45,1.0},   -- widened: long throws can arc more, less power needed
+    Mag    ={12,45,1.0},
+    Dive   ={ 8,35,1.0},
+    Jump   ={12,42,1.0},
+    Slant  ={ 5,28,1.0},
+    Bullet ={ 3,18,1.1},   -- still flatter but has room to reach far
+    Lob    ={32,62,0.85},
+    Screen ={ 3,18,1.0},
+}
+local qb_lead={
+    Dime=6,    -- long route, moderate forward lead
+    Mag=6,     -- similar to dime
+    Dive=8,    -- diving forward fast, extra lead
+    Jump=5,    -- jumping, less forward (more handled by height bias)
+    Slant=5,   -- cutting across, lateral handled by profile
+    Bullet=3,  -- fast ball, minimal lead
+    Lob=10,    -- long air time, farthest lead
+    Screen=2,  -- short/behind LOS, small lead
 }
 
-local qb_data = {
-    power = 0, angle = 25, airtime = 0, distance = 0,
-    direction = Vector3.new(), target = nil,
-    smoothVel = Vector3.new(),  -- exponential smoothed velocity
-    targetPos = Vector3.new()
+-- Position history ring buffer for acceleration-aware prediction
+-- Stores {pos, time} for last HIST_N frames
+local QB_HIST_N = 12   -- ~0.2s of history at 60fps
+
+local qb_data={
+    power=0, angle=25, airtime=0,
+    targetPos=Vector3.new(),
+    target=nil,
+    smoothVel=Vector3.new(),
+    prevVel=Vector3.new(),
+    -- history ring buffer
+    hist={},   -- array of {pos=Vector3, t=number}
+    histN=0,   -- how many valid samples
 }
 
-local qb_Throwtypemode         = "Dime"
-local qb_throwTypes            = {"Dime","Mag","Dive","Jump","Slant","Bullet","Lob","Screen"}
-local qb_currentThrowTypeIndex = 1
-local qb_throwCooldown         = false
-local qb_isMobile              = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-local qb_isController          = false  -- detected on first gamepad input
-
--- Velocity smoothing (EMA, alpha=0.35)
-local VEL_ALPHA = 0.35
-
--- ── Highlight ─────────────────────────────────────────────────────
-local qb_HL = Instance.new("Highlight")
-qb_HL.FillColor        = Color3.fromRGB(84, 118, 241)
-qb_HL.OutlineColor     = Color3.fromRGB(255, 255, 255)
-qb_HL.FillTransparency = 0.85
-qb_HL.Enabled          = false
-qb_HL.Parent           = CoreGui
-
--- ── Throw arc beam ────────────────────────────────────────────────
-local qb_a0   = Instance.new("Attachment", Workspace.Terrain)
-local qb_a1   = Instance.new("Attachment", Workspace.Terrain)
-local qb_beam = Instance.new("Beam")
-qb_beam.Attachment0  = qb_a0
-qb_beam.Attachment1  = qb_a1
-qb_beam.Segments     = 1750
-qb_beam.Width0       = 0.55
-qb_beam.Width1       = 0.55
-qb_beam.Parent       = Workspace.Terrain
-qb_beam.Color        = ColorSequence.new(Color3.fromRGB(100, 105, 231))
-qb_beam.Transparency = NumberSequence.new(0)
-qb_beam.FaceCamera   = true
-qb_beam.Enabled      = false
-
--- ── HUD GUI ───────────────────────────────────────────────────────
-local qb_gui = Instance.new("ScreenGui")
-qb_gui.Name           = "QBACards"
-qb_gui.Parent         = Player:WaitForChild("PlayerGui")
-qb_gui.ResetOnSpawn   = false
-qb_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-qb_gui.Enabled        = false
-qb_gui.DisplayOrder   = 10
-
--- Card size: bigger on mobile
-local CARD_W = qb_isMobile and 96  or 82
-local CARD_H = qb_isMobile and 96  or 82
-local CARD_FONT_BIG   = qb_isMobile and 22 or 20
-local CARD_FONT_SMALL = qb_isMobile and 12 or 11
-local BTN_SIZE        = qb_isMobile and 70  or 56
-
-local function qb_safeText(lbl, txt)
-    if lbl and lbl.Parent then lbl.Text = tostring(txt) end
+-- Add a position sample to the ring buffer
+local function qbHistPush(pos, t)
+    local h=qb_data.hist
+    table.insert(h,{pos=pos,t=t})
+    if #h>QB_HIST_N then table.remove(h,1) end
+    qb_data.histN=#h
 end
 
--- Draggable card: returns value label
-local function makeDragCard(gui, name, anchorX, anchorY, offsetX, offsetY, defaultTxt, titleTxt, color)
-    color = color or Color3.fromRGB(100, 105, 231)
-    local frame = Instance.new("Frame")
-    frame.Name              = name
-    frame.Parent            = gui
-    frame.Size              = UDim2.new(0, CARD_W, 0, CARD_H)
-    frame.AnchorPoint       = Vector2.new(anchorX, anchorY)
-    frame.Position          = UDim2.new(anchorX, offsetX, anchorY, offsetY)
-    frame.BackgroundColor3  = Color3.fromRGB(18, 18, 24)
-    frame.BorderSizePixel   = 0
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    local stroke = Instance.new("UIStroke", frame)
-    stroke.Color = color; stroke.Thickness = 1.5; stroke.Transparency = 0.4
-
-    local vLabel = Instance.new("TextLabel")
-    vLabel.Parent             = frame
-    vLabel.Size               = UDim2.new(1,-4,0.62,0)
-    vLabel.Position           = UDim2.new(0,2,0,6)
-    vLabel.BackgroundTransparency = 1
-    vLabel.Text               = defaultTxt
-    vLabel.TextColor3         = color
-    vLabel.TextScaled         = false
-    vLabel.TextSize           = CARD_FONT_BIG
-    vLabel.Font               = Enum.Font.GothamBold
-    vLabel.TextStrokeTransparency = 0.4
-
-    local tLabel = Instance.new("TextLabel")
-    tLabel.Parent             = frame
-    tLabel.Size               = UDim2.new(1,-4,0.3,0)
-    tLabel.Position           = UDim2.new(0,2,0.68,0)
-    tLabel.BackgroundTransparency = 1
-    tLabel.Text               = titleTxt
-    tLabel.TextColor3         = Color3.fromRGB(160, 160, 175)
-    tLabel.TextScaled         = false
-    tLabel.TextSize           = CARD_FONT_SMALL
-    tLabel.Font               = Enum.Font.Gotham
-
-    -- Drag logic (works with both mouse and touch)
-    local dragging, dragStart, startPos = false, nil, nil
-    frame.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-           or inp.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = inp.Position; startPos = frame.Position
-            inp.Changed:Connect(function()
-                if inp.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
-        end
-    end)
-    UserInputService.InputChanged:Connect(function(inp)
-        if not dragging then return end
-        if inp.UserInputType == Enum.UserInputType.MouseMovement
-           or inp.UserInputType == Enum.UserInputType.Touch then
-            local d = inp.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X,
-                                       startPos.Y.Scale, startPos.Y.Offset + d.Y)
-        end
-    end)
-    UserInputService.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-           or inp.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
-    return vLabel
+-- Clear history (called when target switches)
+local function qbHistClear()
+    qb_data.hist={}
+    qb_data.histN=0
 end
 
--- Cards layout: bottom-left cluster
-local accent1 = Color3.fromRGB(100, 105, 231)
-local accent2 = Color3.fromRGB(80, 200, 120)
-local accent3 = Color3.fromRGB(230, 180, 60)
-local accent4 = Color3.fromRGB(220, 80, 80)
-
--- Row 1 (top): Angle | Mode | Airtime
--- Row 2 (bottom): Distance | Target
-local GAP = CARD_W + 8
-local BASE_X = 12
-local ROW1_Y  = -(CARD_H * 2 + 18)
-local ROW2_Y  = -CARD_H - 4
-
-local qb_angleLabel    = makeDragCard(qb_gui,"AngleCard",   0,1, BASE_X + 0,       ROW1_Y, "25°",  "Angle",    accent1)
-local qb_modeLabel     = makeDragCard(qb_gui,"ModeCard",    0,1, BASE_X + GAP,     ROW1_Y, "Dime", "Mode",     accent2)
-local qb_airtimeLabel  = makeDragCard(qb_gui,"AirtimeCard", 0,1, BASE_X + GAP*2,   ROW1_Y, "0.0s", "Airtime",  accent3)
-local qb_distLabel     = makeDragCard(qb_gui,"DistCard",    0,1, BASE_X + 0,       ROW2_Y, "--",   "Distance", accent4)
-local qb_targetLabel   = makeDragCard(qb_gui,"TargetCard",  0,1, BASE_X + GAP,     ROW2_Y, "None", "Target",   accent1)
-
--- ── Mobile-only: Throw button + Cycle button + Lock button ─────────
-local qb_throwBtn, qb_cycleBtn, qb_lockBtn
-
-if qb_isMobile then
-    local function makeTouchBtn(gui, name, anchorX, anchorY, offX, offY, label, color, size)
-        local btn = Instance.new("TextButton")
-        btn.Name             = name
-        btn.Parent           = gui
-        btn.Size             = UDim2.new(0, size, 0, size)
-        btn.AnchorPoint      = Vector2.new(anchorX, anchorY)
-        btn.Position         = UDim2.new(anchorX, offX, anchorY, offY)
-        btn.BackgroundColor3 = color
-        btn.TextColor3       = Color3.fromRGB(255, 255, 255)
-        btn.Text             = label
-        btn.TextScaled       = true
-        btn.Font             = Enum.Font.GothamBold
-        btn.BorderSizePixel  = 0
-        btn.BackgroundTransparency = 0.25
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0)
-        local stroke = Instance.new("UIStroke", btn)
-        stroke.Color = Color3.fromRGB(255,255,255); stroke.Thickness = 1.5; stroke.Transparency = 0.6
-        return btn
+-- Fit velocity + acceleration from position history using least-squares
+-- Returns vel (Vector3), accel (Vector3)
+-- Uses: pos(t) = pos0 + vel*t + 0.5*accel*t^2
+local function qbFitMotion()
+    local h=qb_data.hist
+    local n=#h
+    if n<3 then
+        -- not enough history, fall back to smoothed vel
+        return qb_data.smoothVel, Vector3.new()
     end
 
-    -- Throw: bottom-right
-    qb_throwBtn = makeTouchBtn(qb_gui,"ThrowBtn", 1,1, -16, -16,
-        "⚡", Color3.fromRGB(80,80,220), BTN_SIZE + 20)
-    -- Cycle type: bottom-right above throw
-    qb_cycleBtn = makeTouchBtn(qb_gui,"CycleBtn", 1,1, -16, -(BTN_SIZE+34),
-        "↻", Color3.fromRGB(50,160,80), BTN_SIZE)
-    -- Lock target: bottom-right above cycle
-    qb_lockBtn  = makeTouchBtn(qb_gui,"LockBtn",  1,1, -16, -(BTN_SIZE*2+46),
-        "🎯", Color3.fromRGB(200,60,60), BTN_SIZE)
+    -- Normalise time: t0 = most recent sample time
+    local t0=h[n].t
+    -- Build simple finite-difference estimates
+    -- velocity: central diff between oldest and newest
+    local dt_total = h[n].t - h[1].t
+    if dt_total < 0.01 then return qb_data.smoothVel, Vector3.new() end
+
+    local rawVel = (h[n].pos - h[1].pos) / dt_total
+
+    -- Acceleration: compare velocity in first half vs second half
+    local mid = math.floor(n/2)
+    if mid<1 then return rawVel, Vector3.new() end
+
+    local dt1 = h[mid].t - h[1].t
+    local dt2 = h[n].t - h[mid].t
+    if dt1<0.005 or dt2<0.005 then return rawVel, Vector3.new() end
+
+    local v1 = (h[mid].pos - h[1].pos) / dt1
+    local v2 = (h[n].pos - h[mid].pos) / dt2
+    local avgDt = (dt1+dt2)*0.5
+    local accel = (v2 - v1) / avgDt
+
+    -- Clamp accel to prevent crazy extrapolation on lag spikes
+    local aMax = 80
+    if accel.Magnitude > aMax then
+        accel = accel.Unit * aMax
+    end
+
+    -- Blend raw vel with smoothed vel (trust physics more when enough history)
+    local blend = math.clamp((n-3)/(QB_HIST_N-3), 0, 1)
+    local finalVel = qb_data.smoothVel:Lerp(rawVel, blend*0.7)
+
+    return finalVel, accel
 end
 
--- ── Physics helpers ───────────────────────────────────────────────
-local function qb_clampOOB(targetPos)
-    if not qb_antiOOB then return targetPos end
-    local bbounds = Workspace:FindFirstChild("bbounds")
-    if not bbounds then return targetPos end
-    local p, s = bbounds.Position, bbounds.Size
-    return Vector3.new(
-        math.clamp(targetPos.X, p.X - s.X/2 + 1, p.X + s.X/2 - 1),
-        targetPos.Y,
-        math.clamp(targetPos.Z, p.Z - s.Z/2 + 1, p.Z + s.Z/2 - 1)
-    )
+-- Predict receiver position t seconds in the future using fitted motion
+local function qbPredictPos(t)
+    local h=qb_data.hist
+    local n=#h
+    if n<1 then return qb_data.target and qb_data.target:FindFirstChild("HumanoidRootPart") and qb_data.target.HumanoidRootPart.Position or Vector3.new() end
+
+    local vel, accel = qbFitMotion()
+    local curPos = h[n].pos
+
+    -- p(t) = curPos + vel*t + 0.5*accel*t^2
+    local pred = curPos + vel*t + accel*(t*t*0.5)
+    return pred, vel, accel
+end
+local qb_mode="Dime"
+local qb_types={"Dime","Mag","Dive","Jump","Slant","Bullet","Lob","Screen"}
+local qb_idx=1
+local qb_mob=UIS.TouchEnabled  -- true on any touch device (phone or tablet)
+
+-- cleanup old beam objects
+for _,v in pairs(WS.Terrain:GetChildren()) do
+    if (v:IsA("Beam") and v.Name=="KasenQBArc") or
+       (v:IsA("Attachment") and (v.Name=="KasenQBA0" or v.Name=="KasenQBA1")) then v:Destroy() end
+end
+for _,v in pairs(CoreGui:GetChildren()) do if v:IsA("Highlight") and v.Name=="KasenQBHL" then v:Destroy() end end
+do
+    local o=Player:WaitForChild("PlayerGui"):FindFirstChild("KasenQBCards"); if o then o:Destroy() end
+    local oc=CoreGui:FindFirstChild("KasenQBCards"); if oc then oc:Destroy() end
 end
 
-local function velForAngle(aRad, xz, dy, grav)
-    local cosA  = math.cos(aRad)
-    local cos2  = cosA * cosA
-    local denom = 2 * (xz * math.tan(aRad) - dy) * cos2
-    if denom <= 0 then return nil end
-    local v2 = grav * xz * xz / denom
-    if v2 <= 0 or v2 ~= v2 then return nil end
+local qbHL=Instance.new("Highlight"); qbHL.Name="KasenQBHL"
+qbHL.FillColor=Color3.fromRGB(84,118,241); qbHL.OutlineColor=Color3.fromRGB(255,255,255)
+qbHL.FillTransparency=0.85; qbHL.Enabled=false; qbHL.Parent=CoreGui
+
+local qba0=Instance.new("Attachment",WS.Terrain); qba0.Name="KasenQBA0"
+local qba1=Instance.new("Attachment",WS.Terrain); qba1.Name="KasenQBA1"
+local qb_beam=Instance.new("Beam"); qb_beam.Name="KasenQBArc"
+qb_beam.Attachment0=qba0; qb_beam.Attachment1=qba1
+qb_beam.Segments=200  -- smooth enough, lower = better perf
+qb_beam.Width0=0.12; qb_beam.Width1=0.04  -- tapered: thick at throw, thin at target
+qb_beam.Parent=WS.Terrain; qb_beam.FaceCamera=true
+qb_beam.LightInfluence=0
+-- Color fades purple -> bright white-purple at apex -> fades at target
+qb_beam.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,   Color3.fromRGB(88, 62, 200)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(190,175,255)),
+    ColorSequenceKeypoint.new(1,   Color3.fromRGB(110,90,220))
+})
+qb_beam.Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,   0.1),
+    NumberSequenceKeypoint.new(0.45,0.0),
+    NumberSequenceKeypoint.new(0.55,0.0),
+    NumberSequenceKeypoint.new(1,   0.6)
+})
+qb_beam.Enabled=false
+
+local qb_gui=Instance.new("ScreenGui"); qb_gui.Name="KasenQBCards"
+qb_gui.ResetOnSpawn=false; qb_gui.IgnoreGuiInset=true
+qb_gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; qb_gui.Enabled=false; qb_gui.DisplayOrder=10
+pcall(function() qb_gui.Parent=CoreGui end)
+if not qb_gui.Parent then qb_gui.Parent=Player:WaitForChild("PlayerGui") end
+
+local HW=72; local HWL=130; local HH=58; local HGAP=5
+local ROW=HW*4+HWL+HGAP*4; local SX=-ROW/2
+local qb_modeL,qb_powerTL,qb_airL,qb_angL,qb_tgtL
+
+local function qbCard(name,offX,defT,title,w)
+    w=w or HW
+    local f=Instance.new("Frame"); f.Name=name; f.Parent=qb_gui
+    local _topInset = qb_mob and 48 or 10
+    f.Size=UDim2.new(0,w,0,HH); f.AnchorPoint=Vector2.new(0.5,0); f.Position=UDim2.new(0.5,offX,0,_topInset)
+    f.BackgroundColor3=Color3.fromRGB(18,18,24); f.BorderSizePixel=0; f.BackgroundTransparency=0.1
+    Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+    local s=Instance.new("UIStroke",f); s.Color=Color3.fromRGB(88,62,200); s.Thickness=1.5; s.Transparency=0.5
+    local vl=Instance.new("TextLabel",f); vl.Size=UDim2.new(1,-4,0,36); vl.Position=UDim2.new(0,2,0,4)
+    vl.BackgroundTransparency=1; vl.Text=defT; vl.TextColor3=Color3.fromRGB(230,230,230)
+    vl.TextSize=18; vl.Font=Enum.Font.GothamBold; vl.TextXAlignment=Enum.TextXAlignment.Center
+    local tl=Instance.new("TextLabel",f); tl.Size=UDim2.new(1,-4,0,16); tl.Position=UDim2.new(0,2,0,38)
+    tl.BackgroundTransparency=1; tl.Text=title; tl.TextColor3=Color3.fromRGB(130,120,200)
+    tl.TextSize=10; tl.Font=Enum.Font.Gotham; tl.TextXAlignment=Enum.TextXAlignment.Center
+    -- draggable HUD card
+    local drag,ds,sp=false,nil,nil
+    f.InputBegan:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+            drag=true; ds=i.Position; sp=f.Position
+            i.Changed:Connect(function() if i.UserInputState==Enum.UserInputState.End then drag=false end end)
+        end end)
+    UIS.InputChanged:Connect(function(i)
+        if drag and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+            local d=i.Position-ds; f.Position=UDim2.new(sp.X.Scale,sp.X.Offset+d.X,sp.Y.Scale,sp.Y.Offset+d.Y) end end)
+    UIS.InputEnded:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=false end end)
+    return vl,tl
+end
+qb_modeL,_            = qbCard("Mode", SX,                  "Dime",  "Throw Type")
+qb_powerL,qb_powerTL  = qbCard("Pwr",  SX+(HW+HGAP),        "--",    "Power")
+qb_airL,_             = qbCard("Air",  SX+(HW+HGAP)*2,       "--",    "Airtime")
+qb_angL,_             = qbCard("Ang",  SX+(HW+HGAP)*3,       "--",    "Angle")
+qb_tgtL,_             = qbCard("Tgt",  SX+(HW+HGAP)*4,       "None",  "Target",HWL)
+
+local function qbS(l,t) if l and l.Parent then l.Text=tostring(t) end end
+
+-- ---- Physics solver ------------------------------------------------
+-- Given launch angle (rad), flat distance xz, height delta dy, gravity g
+-- Returns launch speed, or nil if impossible
+local function velForAngle(a,xz,dy,g)
+    local c=math.cos(a); if math.abs(c)<0.001 then return nil end
+    local num=g*xz*xz
+    local den=2*c*c*(xz*math.tan(a)-dy)
+    if den<=0 then return nil end
+    local v2=num/den
+    if v2<=0 or v2~=v2 or v2==math.huge then return nil end
     return math.sqrt(v2)
 end
 
--- Iterative lead solver: 3 passes of prediction refinement
-local function qb_calcThrow(fromPos, toPos, smoothedVel, useAutoAngle, modeName)
-    local cfg      = qb_PassMode[modeName] or qb_PassMode["Dime"]
-    local leadBase = cfg.leadDistance
-    local angleMin = cfg.angleMin
-    local angleMax = cfg.angleMax
-    local step     = cfg.step or 0.25
-    local speed    = smoothedVel.Magnitude
-    local velDir   = speed > 0.1 and smoothedVel.Unit or Vector3.new()
-
-    -- Initial predicted position
-    local predicted = toPos
-    local flatDist, heightDiff
-
-    -- 3 convergence passes
-    for _ = 1, 3 do
-        local disp   = predicted - fromPos
-        flatDist     = Vector3.new(disp.X, 0, disp.Z).Magnitude
-        heightDiff   = disp.Y
-        -- guess airtime for this prediction
-        local guessT = math.max(flatDist / 60, 0.05)
-        local lead   = speed * guessT + leadBase
-        lead         = math.clamp(lead, 0, flatDist * 0.8)
-        predicted    = toPos + velDir * lead
-    end
-
-    -- Optionally account for target vertical velocity (jumping)
-    local targetVertVel = smoothedVel.Y
-    local heightBonus   = targetVertVel * 0.15  -- small correction for jumpers
-    predicted = predicted + Vector3.new(0, heightBonus, 0)
-    predicted = qb_clampOOB(predicted)
-
-    local disp      = predicted - fromPos
-    flatDist        = Vector3.new(disp.X, 0, disp.Z).Magnitude
-    heightDiff      = disp.Y
-
-    local bestAngle, bestVel, bestAirtime, bestScore = qb_manualAngle, 0, 0, math.huge
-
-    if useAutoAngle then
-        for aDeg = angleMin, angleMax, step do
-            local aRad = math.rad(aDeg)
-            local v    = velForAngle(aRad, flatDist, heightDiff, qb_gMag)
-            if v then
-                local at    = flatDist / (v * math.cos(aRad))
-                -- Score: favour lower velocity AND shorter airtime; weight airtime more for accuracy
-                local score = v * 0.6 + at * 8
-                if score < bestScore then
-                    bestScore   = score
-                    bestAngle   = aDeg
-                    bestVel     = v
-                    bestAirtime = at
-                end
-            end
-        end
-    else
-        local aRad = math.rad(qb_manualAngle)
-        local v    = velForAngle(aRad, flatDist, heightDiff, qb_gMag)
-        bestAngle   = qb_manualAngle
-        bestVel     = v or 0
-        bestAirtime = (v and v > 0) and flatDist / (v * math.cos(aRad)) or 0
-    end
-
-    bestVel = math.clamp(bestVel, 0, 95)
-    qb_data.angle    = bestAngle
-    qb_data.airtime  = bestAirtime
-    qb_data.distance = flatDist
-    qb_data.targetPos = predicted
-    return bestVel, bestAngle, bestAirtime, predicted
-end
-
--- ── Target selection ──────────────────────────────────────────────
-local function qb_screenDist(worldPos)
-    local sp, onScreen = Camera:WorldToViewportPoint(worldPos)
-    if not onScreen then return math.huge end
-    local center = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-    return (Vector2.new(sp.X, sp.Y) - center).Magnitude
-end
-
--- Returns character model or nil
-local function qb_findClosestOnScreen()
-    local closest, closestDist = nil, math.huge
-    local check = function(model)
-        local hrp = model:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        local d = qb_screenDist(hrp.Position)
-        if d < closestDist then closest = model; closestDist = d end
-    end
-    for _, t in pairs(Players:GetPlayers()) do
-        if t ~= Player and t.Team == Player.Team and t.Character then check(t.Character) end
-    end
-    local npcwr = Workspace:FindFirstChild("npcwr")
-    if npcwr then
-        for _, desc in pairs(npcwr:GetDescendants()) do
-            if desc:IsA("Model") and (desc.Name == "bot 1" or desc.Name == "bot 3") then
-                check(desc)
-            end
+-- Solve best (angle,speed,airtime) for from->target given gravity scale
+-- Steps 0.5 deg for fine resolution; prefers angle closest to midpoint at same score
+local function solveThrow(from,target,mode)
+    local pm=qb_PM[mode] or qb_PM["Dime"]
+    local mn,mx,gs=pm[1],pm[2],pm[3]
+    local g=qb_gMag*gs
+    local disp=target-from
+    local xz=Vector3.new(disp.X,0,disp.Z).Magnitude
+    local dy=disp.Y
+    local mid=(mn+mx)/2
+    local bV,bA,bT,bScore=0,mid,0,math.huge
+    local step=0.5
+    for ad=mn,mx,step do
+        local ar=math.rad(ad)
+        local v=velForAngle(ar,xz,dy,g)
+        if v and v>0 and v<=95 then
+            local at=xz/(v*math.cos(ar))
+            -- score: penalise high power and angles far from mid (prefer low flat throws)
+            local sc=v*0.2+math.abs(ad-mid)*0.5
+            if sc<bScore then bScore=sc; bA=ad; bV=v; bT=at end
         end
     end
-    return closest
+    -- if power is still >90, walk angle up toward max to find lower power solution
+    if bV>90 then
+        for ad=bA,mx,step do
+            local ar=math.rad(ad)
+            local v=velForAngle(ar,xz,dy,g)
+            if v and v>0 and v<bV then bA=ad; bV=v; bT=xz/(v*math.cos(ar)); break end
+        end
+    end
+    bV=math.clamp(bV,0,95)
+    return bV,bA,bT
 end
 
-local function qb_getTarget()
-    -- If manually locked, keep it unless they're gone
+-- ================================================================
+-- qbCalc: physics-accurate lead per throw mode
+--
+-- Each mode has a unique lead profile:
+--   Dime   - long distance, leads fully along receiver path + slight upfield bias
+--   Mag    - similar to dime but allows vertical correction (over LBs)
+--   Dive   - receiver diving forward, extra forward lead, no lateral
+--   Jump   - receiver jumping, add upward arc bias to prediction
+--   Slant  - receiver cutting across field: lead perpendicular to QB->receiver line
+--   Bullet - fast flat throw: minimal lead, purely horizontal velocity-based
+--   Lob    - high arc, long air time: maximum forward lead + height compensation
+--   Screen - very short, receiver slowing down: reduce lead, catch behind LOS
+--
+-- Formula: pred = receiverPos
+--            + vel * airtime               (pure velocity prediction)
+--            + modeSlant * lateralVec      (mode-specific directional bias)
+--            + Vector3.new(0, heightBias, 0) (vertical correction per mode)
+-- ================================================================
+
+-- Per-mode tuning: {velScale, extraLead, lateralSlant, heightBias}
+-- velScale:    multiplier on velocity*airtime (1.0 = full physics, <1 = conservative)
+-- extraLead:   flat extra studs in movement direction (from slider)
+-- lateralSlant: bias perpendicular to QB->receiver line (+ = toward sideline)
+-- heightBias:  extra Y added to prediction target
+local function applyAntiOOB(pos)
+    if not qb_antiOOB then return pos end
+    local bb=WS:FindFirstChild("bbounds")
+    if not bb then return pos end
+    local p,s=bb.Position,bb.Size
+    return Vector3.new(
+        math.clamp(pos.X,p.X-s.X/2+2,p.X+s.X/2-2),
+        pos.Y,
+        math.clamp(pos.Z,p.Z-s.Z/2+2,p.Z+s.Z/2-2))
+end
+
+-- Main prediction: iterative lead compensation
+-- Returns power,angle,airtime,predictedPos
+local function qbCalc(from,to,vel,autoA,mode)
+    local pm=qb_PM[mode] or qb_PM["Dime"]
+    local _,_,gs=pm[1],pm[2],pm[3]
+    local g=qb_gMag*gs
+    local lead=qb_lead[mode] or 5
+
+    local hvl=Vector3.new(vel.X,0,vel.Z)
+    local hspd=hvl.Magnitude
+    local hdir=hspd>0.5 and hvl.Unit or Vector3.new()
+
+    local fl=Vector3.new((to-from).X,0,(to-from).Z).Magnitude
+
+    -- Build a prediction given a specific airtime t
+    local function buildPred(t)
+        -- Velocity lead: where receiver will be in t seconds
+        local velLead = hvl * t
+        -- Flat slider lead: only applied when receiver is actually moving
+        -- When stationary (hspd<0.5), slider lead is 0 so we don't push it forward
+        local sliderLead = hdir * lead * math.clamp(hspd / 4, 0, 1)
+        -- Height: aim slightly above receiver's current position scaled with distance
+        -- This compensates for ball arc drop at long range
+        -- At 20 studs = +0.5, at 60 studs = +1.5, at 100 studs = +2.5
+        local heightComp = Vector3.new(0, math.clamp(fl * 0.025, 0.3, 3.0), 0)
+        return applyAntiOOB(to + velLead + sliderLead + heightComp)
+    end
+
+    local initT = math.max(fl/40, 0.15)
+    local pred  = buildPred(initT)
+    local bV,bA,bT = solveThrow(from,pred,mode)
+
+    -- Iterative refinement: 5 passes using actual solved airtime
+    for _=1,5 do
+        if bT>0.05 then
+            local newPred = buildPred(bT)
+            local nV,nA,nT = solveThrow(from,newPred,mode)
+            if nV>0 and math.abs(nT-bT)<0.4 then
+                pred=newPred; bV=nV; bA=nA; bT=nT
+            else break end
+        else break end
+    end
+
+    -- manual angle override
+    if not autoA then
+        local ar=math.rad(qb_manualAngle)
+        local disp=pred-from
+        local xz=Vector3.new(disp.X,0,disp.Z).Magnitude
+        local v=velForAngle(ar,xz,disp.Y,g)
+        bA=qb_manualAngle
+        bV=v and math.clamp(v,0,95) or 0
+        bT=bV>0 and xz/(bV*math.cos(ar)) or 0
+    end
+
+    bV=math.clamp(bV,0,95)
+    qb_data.power=bV; qb_data.angle=bA; qb_data.airtime=bT; qb_data.targetPos=pred
+    return bV,bA,bT,pred
+end
+
+-- ---- Target selection -----------------------------------------------
+local function qbScreenD(wp)
+    local sp,on=Camera:WorldToViewportPoint(wp)
+    if not on then return math.huge end
+    return (Vector2.new(sp.X,sp.Y)-Vector2.new(Camera.ViewportSize.X/2,Camera.ViewportSize.Y/2)).Magnitude
+end
+
+-- Build sorted list of all eligible receivers (teammates + bots), best first
+-- Returns array of {char=model, name=string, score=number}
+local function qbBuildReceiverList()
+    if not Hrp then return {} end
+    local list={}
+    local function add(m)
+        local h=m:FindFirstChild("HumanoidRootPart"); if not h then return end
+        local hum=m:FindFirstChild("Humanoid"); if hum and hum.Health<=0 then return end
+        local screenD=qbScreenD(h.Position)
+        local worldD=(Hrp.Position-h.Position).Magnitude
+        local s=(screenD/600)*0.6+(worldD/200)*0.4
+        local tp=Players:GetPlayerFromCharacter(m)
+        local nm=(tp and (tp.DisplayName~="" and tp.DisplayName or tp.Name)) or m.Name or "?"
+        table.insert(list,{char=m,name=nm,score=s})
+    end
+    for _,t in pairs(Players:GetPlayers()) do
+        local sameTeam = Player.Team == nil or t.Team == Player.Team
+        if t~=Player and sameTeam and t.Character then add(t.Character) end
+    end
+    local npc=WS:FindFirstChild("npcwr")
+    if npc then for _,d in pairs(npc:GetDescendants()) do
+        if d:IsA("Model") and (d.Name=="bot 1" or d.Name=="bot 3") then add(d) end
+    end end
+    table.sort(list,function(a,b) return a.score<b.score end)
+    return list
+end
+
+-- Persistent receiver list and index for cycling
+local qb_receivers={}   -- sorted list, rebuilt each frame
+local qb_tgtIdx=1       -- which receiver we're currently on
+local qb_manualTarget=false  -- true when user has manually cycled (stop auto-switching)
+
+local function qbSetTargetIdx(idx)
+    if #qb_receivers==0 then return end
+    qb_tgtIdx=((idx-1)%#qb_receivers)+1  -- wrap 1..N
+    local r=qb_receivers[qb_tgtIdx]
+    if not r then return end
+    qb_data.target=r.char
+    qb_lockedTarget=r.char
+    local tp=Players:GetPlayerFromCharacter(r.char)
+    qb_lockedPlayer=tp or nil
+    qbHL.Adornee=r.char; qbHL.Enabled=qbEnabled
+    qb_data.smoothVel=Vector3.new(); qb_data.prevVel=Vector3.new(); qbHistClear()
+    -- HUD: show "Name (idx/total)"
+    qbS(qb_tgtL,r.name.." "..qb_tgtIdx.."/"..#qb_receivers)
+    qb_manualTarget=true
+end
+
+-- Cycle to next/prev receiver
+local function qbCycleTarget(rev)
+    if #qb_receivers==0 then
+        -- rebuild once immediately
+        qb_receivers=qbBuildReceiverList()
+        if #qb_receivers==0 then return end
+    end
+    -- find current target in list
+    if qb_data.target and not qb_manualTarget then
+        for i,r in ipairs(qb_receivers) do
+            if r.char==qb_data.target then qb_tgtIdx=i; break end
+        end
+    end
+    qbSetTargetIdx(qb_tgtIdx+(rev and -1 or 1))
+end
+
+local function qbGetTarget()
+    -- if user manually picked a target, keep it (unless it died/left)
+    if qb_manualTarget and qb_lockedTarget then
+        local h=qb_lockedTarget:FindFirstChild("HumanoidRootPart")
+        local hum=qb_lockedTarget:FindFirstChild("Humanoid")
+        if h and qb_lockedTarget.Parent and (not hum or hum.Health>0) then
+            qb_data.target=qb_lockedTarget; return
+        else
+            -- target gone, fall through to auto
+            qb_lockedTarget=nil; qb_lockedPlayer=nil; qb_manualTarget=false
+        end
+    end
     if qb_lockedTarget then
-        local hrp = qb_lockedTarget:FindFirstChild("HumanoidRootPart")
-        if hrp and qb_lockedTarget.Parent then
-            qb_data.target = qb_lockedTarget
-            return
-        else
-            qb_lockedTarget = nil
+        local h=qb_lockedTarget:FindFirstChild("HumanoidRootPart")
+        if h and qb_lockedTarget.Parent then qb_data.target=qb_lockedTarget; return
+        else qb_lockedTarget=nil end
+    end
+    -- auto: pick best from list
+    if #qb_receivers>0 then
+        local best=qb_receivers[1]
+        if best and best.char~=qb_data.target then
+            qb_data.target=best.char
+            qbHL.Adornee=best.char; qbHL.Enabled=qbEnabled
+            qb_data.smoothVel=Vector3.new(); qb_data.prevVel=Vector3.new(); qbHistClear()
         end
     end
-    -- Auto: closest to screen center
-    local closest = qb_findClosestOnScreen()
-    if closest and closest ~= qb_data.target then
-        qb_data.target    = closest
-        qb_HL.Adornee     = closest
-        qb_HL.Enabled     = true
-        qb_data.smoothVel = Vector3.new()  -- reset smoother on new target
+end
+
+local function qbLock()
+    if not qb_data.target then
+        qb_receivers = qbBuildReceiverList()
+        if #qb_receivers > 0 then
+            qb_data.target = qb_receivers[1].char
+        else return end
     end
+    local tp=Players:GetPlayerFromCharacter(qb_data.target)
+    if tp then qb_lockedPlayer=tp; qb_lockedTarget=qb_data.target
+    else qb_lockedPlayer=nil; qb_lockedTarget=qb_data.target end
+    local nm=(tp and (tp.DisplayName~="" and tp.DisplayName or tp.Name)) or qb_data.target.Name or "?"
+    -- find index in receiver list
+    local idx,total=1,#qb_receivers
+    for i,r in ipairs(qb_receivers) do if r.char==qb_data.target then idx=i;break end end
+    qbS(qb_tgtL,"L:"..nm..(total>0 and " "..idx.."/"..total or ""))
+    qb_manualTarget=true
 end
-
-local function qb_lockCurrentTarget()
-    if qb_data.target then
-        qb_lockedTarget = qb_data.target
-        print("[Aethel Hub] QB Lock: Locked: " .. (qb_lockedTarget.Name or "?"))
+local function qbUnlock()
+    qb_lockedPlayer=nil; qb_lockedTarget=nil; qb_manualTarget=false; qbS(qb_tgtL,"None")
+end
+local function qbHasBall()
+    if not Char then return false end
+    -- Check character for equipped tool
+    if Char:FindFirstChildOfClass("Tool") then return true end
+    -- Also check if any tool named football-related is equipped
+    for _,v in ipairs(Char:GetChildren()) do
+        if v:IsA("Tool") then return true end
     end
+    return false
 end
 
-local function qb_unlockTarget()
-    qb_lockedTarget = nil
-end
-
--- ── Throw helpers ─────────────────────────────────────────────────
-local function qb_getGuiPower()
-    local ballGui = Player.PlayerGui:FindFirstChild("BallGui")
-    if not ballGui then return nil end
-    local ok, d = pcall(function() return ballGui:FindFirstChild("Disp", true) end)
-    if ok and d and d:IsA("TextLabel") then return tonumber(d.Text) end
-    return nil
-end
-
-local function qb_doThrow(dirUnit, power)
+-- ---- Fire -----------------------------------------------------------
+local function qbDoThrow(dir,pwr)
     if not qbEnabled or qb_throwCooldown then return end
-    local Football = Char and Char:FindFirstChildOfClass("Tool")
-    if not Football then return end
-    local handle   = Football:FindFirstChild("Handle")
-    local Remote   = handle and handle:FindFirstChildOfClass("RemoteEvent")
-    if not Remote then return end
-    qb_throwCooldown = true
-    handle.CanCollide = false
+    local F=Char and Char:FindFirstChildOfClass("Tool"); if not F then return end
+    local h=F:FindFirstChild("Handle") or F:FindFirstChildOfClass("BasePart")
+    if not h then return end
+    local R = h:FindFirstChildOfClass("RemoteEvent")
+    if not R then R = F:FindFirstChildOfClass("RemoteEvent") end
+    if not R then R = F:FindFirstChild("RemoteEvent",true) end
+    if not R then return end
+    pcall(function() h.CanCollide=false end)
     pcall(function()
-        local anims     = ReplicatedStorage:FindFirstChild("Animations")
-        local throwAnim = anims and anims:FindFirstChild("Throw")
-        if throwAnim then Char.Humanoid:LoadAnimation(throwAnim):Play() end
+        local a=RS:FindFirstChild("Animations"); local ta=a and a:FindFirstChild("Throw")
+        if ta then Char.Humanoid:LoadAnimation(ta):Play() end
     end)
+    qb_throwCooldown = true
     task.delay(0.13, function()
-        if not handle or not handle.Parent then qb_throwCooldown = false; return end
-        local origin = handle.Position
-        local tgt    = origin + dirUnit * 10000
+        if not h or not h.Parent then qb_throwCooldown = false; return end
+        local origin = h.Position
+        local target = origin + dir * 10000
         if game.PlaceId == 8206123457 then
-            Remote:FireServer("Clicked", origin, tgt, power)
+            pcall(function() R:FireServer("Clicked", origin, target, pwr) end)
         else
-            Remote:FireServer("Clicked", origin, tgt, 1, power)
+            local ok = pcall(function() R:FireServer("Clicked", origin, target, 1, pwr) end)
+            if not ok then pcall(function() R:FireServer("Clicked", origin, target, pwr) end) end
         end
         task.delay(0.25, function()
-            if handle and handle.Parent then handle.CanCollide = true end
+            pcall(function() if h and h.Parent then h.CanCollide=true end end)
         end)
         task.delay(0.4, function() qb_throwCooldown = false end)
     end)
 end
 
-local function qb_executeThrow()
+local function qbExec()
     if not qbEnabled or qb_throwCooldown then return end
-    if not qb_data.target or not qb_data.target.Parent then return end
-    local head = Char and Char:FindFirstChild("Head")
-    if not head or not Char:FindFirstChildOfClass("Tool") then return end
-
-    local hrp   = qb_data.target:FindFirstChild("HumanoidRootPart")
-    local tPos  = hrp and hrp.Position or qb_data.target:GetPivot().Position
-    local tVel  = qb_data.smoothVel   -- use smoothed velocity
-
-    local calcV, _, airtime, predicted =
-        qb_calcThrow(head.Position, tPos, tVel, qb_autoAngle, qb_Throwtypemode)
-
-    local power = (not qb_autoPower and qb_getGuiPower()) or calcV
-    if not power or power <= 0 then return end
-
-    local gv  = Vector3.new(0, -qb_gMag, 0)
-    -- Release point: 5 studs ahead of head toward target
-    local toTarget = (predicted - head.Position)
-    if toTarget.Magnitude < 0.01 then return end
-    local x0  = head.Position + toTarget.Unit * 5
-    local dir = predicted - x0 - 0.5 * gv * airtime * airtime
-    if dir.Magnitude < 0.01 then return end
-    qb_doThrow(dir.Unit, power)
-end
-
--- ── Throw type cycle ──────────────────────────────────────────────
-local function qb_cycleThrowType(reverse)
-    if reverse then
-        qb_currentThrowTypeIndex -= 1
-        if qb_currentThrowTypeIndex < 1 then qb_currentThrowTypeIndex = #qb_throwTypes end
-    else
-        qb_currentThrowTypeIndex += 1
-        if qb_currentThrowTypeIndex > #qb_throwTypes then qb_currentThrowTypeIndex = 1 end
+    -- Try to auto-pick a target if none selected yet (important for mobile)
+    if not qb_data.target then
+        qb_receivers = qbBuildReceiverList()
+        if #qb_receivers > 0 then
+            qb_data.target = qb_receivers[1].char
+        else
+            return
+        end
     end
-    qb_Throwtypemode = qb_throwTypes[qb_currentThrowTypeIndex]
-    qb_safeText(qb_modeLabel, qb_Throwtypemode)
+    if not qbHasBall() then return end
+    local head=Char and Char:FindFirstChild("Head")
+    if not head then return end
+
+    -- Always solve fresh at fire time with latest smoothed velocity
+    local hrp=qb_data.target:FindFirstChild("HumanoidRootPart")
+    local tPos=hrp and hrp.Position or qb_data.target:GetPivot().Position
+
+    local pwr,ang,air,pred=qbCalc(head.Position,tPos,qb_data.smoothVel,qb_autoAngle,qb_mode)
+
+    if not pwr or pwr<=0 then return end
+
+    -- Power: if Auto Power ON use physics-solved, else read BallGui Disp label
+    local guiPwr = nil
+    if not qb_autoPower then
+        local ballGui = Player.PlayerGui:FindFirstChild("BallGui")
+        if ballGui then
+            local ok, d = pcall(function() return ballGui:FindFirstChild("Disp", true) end)
+            if ok and d and d:IsA("TextLabel") then guiPwr = tonumber(d.Text) end
+        end
+    end
+    local firePwr = (not qb_autoPower and guiPwr) or pwr
+
+    -- Build throw direction from solved physics
+    local pm=qb_PM[qb_mode] or qb_PM["Dime"]
+    local g=qb_gMag*pm[3]
+    local gv=Vector3.new(0,-g,0)
+    local toP=pred-head.Position
+    if toP.Magnitude<0.1 then return end
+    local x0=head.Position+toP.Unit*4
+    -- direction = displacement minus gravity arc
+    local dir=pred-x0-0.5*gv*air*air
+    if dir.Magnitude<0.1 then return end
+    qbDoThrow(dir.Unit,firePwr)
 end
 
--- ── RenderStepped: update HUD + beam ──────────────────────────────
+local function qbCycle(rev)
+    if rev then qb_idx=qb_idx-1; if qb_idx<1 then qb_idx=#qb_types end
+    else qb_idx=qb_idx+1; if qb_idx>#qb_types then qb_idx=1 end end
+    qb_mode=qb_types[qb_idx]; qbS(qb_modeL,qb_mode)
+end
+
+-- ---- RenderStepped: update HUD + arc ---------------------------------
 RunService.RenderStepped:Connect(function(dt)
     if not qbEnabled then
-        qb_beam.Enabled = false; qb_HL.Enabled = false; qb_gui.Enabled = false; return
-    end
-    local hasBall = Char and Char:FindFirstChildOfClass("Tool")
-    if not hasBall then
-        qb_beam.Enabled = false; qb_HL.Enabled = false
-        qb_gui.Enabled  = false; qb_data.target = nil; qb_lockedTarget = nil; return
-    end
-    qb_gui.Enabled = true
+        qb_beam.Enabled=false; qbHL.Enabled=false; qb_gui.Enabled=false; return end
+    if not qbHasBall() then
+        qb_beam.Enabled=false; qbHL.Enabled=false; qb_gui.Enabled=false; qb_data.target=nil; return end
+    qb_gui.Enabled=true
 
-    qb_getTarget()
+    -- Target tracking
+    if qb_lockedPlayer then
+        local nc=qb_lockedPlayer.Character
+        if nc and nc.Parent then
+            if qb_lockedTarget~=nc then
+                qb_lockedTarget=nc; qb_data.target=nc
+                qbHL.Adornee=nc; qbHL.Enabled=true
+                qb_data.smoothVel=Vector3.new(); qb_data.prevVel=Vector3.new(); qbHistClear()
+            else qb_data.target=qb_lockedTarget end
+        else
+            qb_data.target=nil; qb_beam.Enabled=false; qbS(qb_tgtL,"L:(wait)"); return
+        end
+    else
+        -- Rebuild sorted receiver list every frame so cycling is always fresh
+        qb_receivers=qbBuildReceiverList()
+        qbGetTarget()
+    end
 
     if not qb_data.target or not qb_data.target.Parent then
-        qb_HL.Enabled = false
-        qb_safeText(qb_angleLabel,   "--")
-        qb_safeText(qb_modeLabel,    qb_Throwtypemode)
-        qb_safeText(qb_airtimeLabel, "--")
-        qb_safeText(qb_distLabel,    "--")
-        qb_safeText(qb_targetLabel,  "None")
-        qb_beam.Enabled = false
+        qbHL.Enabled=false; qb_beam.Enabled=false
+        qbS(qb_angL,"--"); qbS(qb_modeL,qb_mode); qbS(qb_airL,"--"); qbS(qb_powerL,"--"); qbS(qb_tgtL,"None")
         return
     end
 
-    qb_HL.Adornee = qb_data.target
-    qb_HL.Enabled = true
+    qbHL.Adornee=qb_data.target; qbHL.Enabled=true
+    local head=Char:FindFirstChild("Head"); if not head then return end
 
-    local head = Char:FindFirstChild("Head")
-    if not head then return end
+    local hrp=qb_data.target:FindFirstChild("HumanoidRootPart")
+    local tPos=hrp and hrp.Position or qb_data.target:GetPivot().Position
+    local tVel=hrp and hrp.AssemblyLinearVelocity or Vector3.new()
 
-    local hrp  = qb_data.target:FindFirstChild("HumanoidRootPart")
-    local tPos = hrp and hrp.Position or qb_data.target:GetPivot().Position
-    local tVel = hrp and hrp.AssemblyLinearVelocity or Vector3.new()
+    -- Push to history for future use
+    qbHistPush(tPos, tick())
 
-    -- Smooth velocity (EMA)
-    local alpha = math.clamp(1 - math.exp(-dt / 0.08), 0.05, 0.6)
-    qb_data.smoothVel = qb_data.smoothVel:Lerp(tVel, alpha)
+    -- Adaptive EMA velocity smoothing
+    local velDelta=(tVel-qb_data.prevVel).Magnitude
+    local alpha = math.clamp(0.07 + velDelta*0.25, 0.07, 0.40)
+    qb_data.smoothVel=qb_data.smoothVel:Lerp(tVel,alpha)
+    qb_data.prevVel=tVel
 
-    local calcV, angle, airtime, predicted =
-        qb_calcThrow(head.Position, tPos, qb_data.smoothVel, qb_autoAngle, qb_Throwtypemode)
+    local cv,ang,air=qbCalc(head.Position,tPos,qb_data.smoothVel,qb_autoAngle,qb_mode)
+    qb_data.power=cv; qb_data.angle=ang; qb_data.airtime=air
 
-    qb_data.power   = (not qb_autoPower and qb_getGuiPower()) or calcV
-    qb_data.angle   = angle
-    qb_data.airtime = airtime
+    -- HUD
+    local tp=Players:GetPlayerFromCharacter(qb_data.target)
+    local tn=tp and (tp.DisplayName~="" and tp.DisplayName or tp.Name) or "NPC"
+    -- show index/total so you know how many receivers there are
+    local total=#qb_receivers
+    local idx=1
+    for i,r in ipairs(qb_receivers) do if r.char==qb_data.target then idx=i;break end end
+    local suffix=total>1 and (" "..idx.."/"..total) or ""
+    if qb_lockedPlayer or qb_manualTarget then tn=">"..tn end
+    tn=tn..suffix
 
-    -- Target name display
-    local tName = "NPC"
-    local tPlr  = Players:GetPlayerFromCharacter(qb_data.target)
-    if tPlr then tName = tPlr.DisplayName ~= "" and tPlr.DisplayName or tPlr.Name end
+    local dp=string.format("%d",math.floor((cv or 0)+0.5))
 
-    qb_safeText(qb_angleLabel,   string.format("%.1f°", angle))
-    qb_safeText(qb_modeLabel,    qb_Throwtypemode)
-    qb_safeText(qb_airtimeLabel, string.format("%.2fs", airtime))
-    qb_safeText(qb_distLabel,    string.format("%ds", math.floor(qb_data.distance + 0.5)))
-    qb_safeText(qb_targetLabel,  tName)
+    qbS(qb_angL,string.format("%.1f",ang).."d")
+    qbS(qb_modeL,qb_mode)
+    qbS(qb_airL,string.format("%.2f",air).."s")
+    qbS(qb_powerL,dp)
+    qbS(qb_tgtL,tn)
 
-    -- Beam
-    if airtime > 0 and qb_data.power > 0 then
-        local gv  = Vector3.new(0, -qb_gMag, 0)
-        local toTarget = (predicted - head.Position)
-        if toTarget.Magnitude > 0.01 then
-            local x0  = head.Position + toTarget.Unit * 5
-            local dirU = predicted - x0 - 0.5 * gv * airtime * airtime
-            if dirU.Magnitude > 0.01 then
-                dirU = dirU.Unit
-                local c0, c1, cf1, cf2 = beamProjectile(gv, dirU * qb_data.power, x0, airtime)
-                qb_beam.Enabled    = true
-                qb_beam.CurveSize0 = c0 or 0
-                qb_beam.CurveSize1 = c1 or 0
-                qb_a0.CFrame = qb_a0.Parent.CFrame:Inverse() * (cf1 or CFrame.new(x0))
-                qb_a1.CFrame = qb_a1.Parent.CFrame:Inverse() * (cf2 or CFrame.new(predicted))
+    -- Arc beam
+    if air>0 and cv>0 then
+        local pm2=qb_PM[qb_mode] or qb_PM["Dime"]
+        local gv=Vector3.new(0,-qb_gMag*pm2[3],0)
+        local tt=qb_data.targetPos-head.Position
+        if tt.Magnitude>0.01 then
+            local x0=head.Position+tt.Unit*3
+            local du=qb_data.targetPos-x0-0.5*gv*air*air
+            if du.Magnitude>0.01 then
+                du=du.Unit
+                local c0,c1,cf1,cf2=beamProj(gv,du*cv,x0,air)
+                qb_beam.Enabled=true
+                qb_beam.CurveSize0=c0 or 0; qb_beam.CurveSize1=c1 or 0
+                qba0.CFrame=qba0.Parent.CFrame:Inverse()*(cf1 or CFrame.new(x0))
+                qba1.CFrame=qba1.Parent.CFrame:Inverse()*(cf2 or CFrame.new(qb_data.targetPos))
             end
         end
+    else
+        qb_beam.Enabled=false
     end
 end)
 
--- ── Input: keyboard/mouse ─────────────────────────────────────────
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if not qbEnabled then return end
-
-    -- Keyboard
-    if input.KeyCode == Enum.KeyCode.Z then qb_cycleThrowType(false) end
-    if input.KeyCode == Enum.KeyCode.X then qb_cycleThrowType(true) end
-    if input.KeyCode == Enum.KeyCode.F then
-        if qb_lockedTarget then qb_unlockTarget()
-        else qb_lockCurrentTarget() end
+UIS.InputBegan:Connect(function(inp,gpe)
+    if gpe or not qbEnabled then return end
+    local kc=inp.KeyCode; local ut=inp.UserInputType
+    -- Throw type cycle: Z=forward, X=backward
+    if kc==Enum.KeyCode.Z then qbCycle(false) end
+    if kc==Enum.KeyCode.X then qbCycle(true) end
+    -- Lock/unlock target: F
+    if kc==Enum.KeyCode.F then
+        if qb_manualTarget or qb_lockedPlayer or qb_lockedTarget then qbUnlock() else qbLock() end
     end
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-       or input.KeyCode == Enum.KeyCode.Space then
-        qb_executeThrow()
-    end
-
-    -- Controller (gamepad)
-    if input.UserInputType == Enum.UserInputType.Gamepad1 then
-        qb_isController = true
-        -- R2 / ButtonR2 = throw
-        if input.KeyCode == Enum.KeyCode.ButtonR2 then
-            qb_executeThrow()
-        end
-        -- R1 = cycle forward
-        if input.KeyCode == Enum.KeyCode.ButtonR1 then
-            qb_cycleThrowType(false)
-        end
-        -- L1 = cycle backward
-        if input.KeyCode == Enum.KeyCode.ButtonL1 then
-            qb_cycleThrowType(true)
-        end
-        -- DPad Right = cycle forward
-        if input.KeyCode == Enum.KeyCode.DPadRight then
-            qb_cycleThrowType(false)
-        end
-        -- DPad Left = cycle backward
-        if input.KeyCode == Enum.KeyCode.DPadLeft then
-            qb_cycleThrowType(true)
-        end
-        -- B = toggle lock
-        if input.KeyCode == Enum.KeyCode.ButtonB then
-            if qb_lockedTarget then qb_unlockTarget()
-            else qb_lockCurrentTarget() end
+    -- Cycle receivers: R=next, G=prev
+    if kc==Enum.KeyCode.R then qbCycleTarget(false) end
+    if kc==Enum.KeyCode.G then qbCycleTarget(true) end
+    -- Throw: Space or M1
+    if kc==Enum.KeyCode.Space then qbExec() end
+    if ut==Enum.UserInputType.MouseButton1 and qbHasBall() then qbExec() end
+    -- Controller
+    if ut==Enum.UserInputType.Gamepad1 then
+        if kc==Enum.KeyCode.ButtonR2 then qbExec() end
+        if kc==Enum.KeyCode.ButtonR1 or kc==Enum.KeyCode.DPadRight then qbCycle(false) end
+        if kc==Enum.KeyCode.ButtonL1 or kc==Enum.KeyCode.DPadLeft  then qbCycle(true) end
+        if kc==Enum.KeyCode.DPadUp then qbCycleTarget(false) end
+        if kc==Enum.KeyCode.DPadDown then qbCycleTarget(true) end
+        if kc==Enum.KeyCode.ButtonB then
+            if qb_manualTarget or qb_lockedPlayer or qb_lockedTarget then qbUnlock() else qbLock() end
         end
     end
 end)
 
--- ── Mobile touch buttons ──────────────────────────────────────────
-if qb_isMobile then
-    qb_throwBtn.MouseButton1Click:Connect(function()
-        qb_executeThrow()
+if qb_mob then
+    -- Aethel-style mobile buttons: MouseButton1Click ONLY (no TouchTap to avoid double-fire)
+    local BTN_SIZE = 70
+    local function makeTouchBtn(name, anchorX, anchorY, offX, offY, lbl, col)
+        local b = Instance.new("TextButton")
+        b.Name=name; b.Parent=qb_gui
+        b.Size=UDim2.new(0,BTN_SIZE,0,BTN_SIZE)
+        b.AnchorPoint=Vector2.new(anchorX,anchorY)
+        b.Position=UDim2.new(anchorX,offX,anchorY,offY)
+        b.BackgroundColor3=col; b.TextColor3=Color3.fromRGB(255,255,255)
+        b.Text=lbl; b.TextScaled=true; b.Font=Enum.Font.GothamBold
+        b.BorderSizePixel=0; b.BackgroundTransparency=0.25
+        Instance.new("UICorner",b).CornerRadius=UDim.new(1,0)
+        local sk=Instance.new("UIStroke",b)
+        sk.Color=Color3.fromRGB(255,255,255); sk.Thickness=1.5; sk.Transparency=0.6
+        return b
+    end
+    -- Throw: positioned bottom-right, offset to not overlap game's jump button
+    local throwOff = -(BTN_SIZE+10+BTN_SIZE+16)
+    local throwBtn = makeTouchBtn("ThrowBtn",1,1,throwOff,-16,"THROW",Color3.fromRGB(80,80,220))
+    throwBtn.MouseButton1Click:Connect(function() qbExec() end)
+    -- Lock: right side, above thumb area
+    local lockBtn = makeTouchBtn("LockBtn",1,1,-16,-(BTN_SIZE*3+36),"LOCK",Color3.fromRGB(200,60,60))
+    lockBtn.MouseButton1Click:Connect(function()
+        if qb_manualTarget or qb_lockedPlayer or qb_lockedTarget then qbUnlock() else qbLock() end
     end)
-    qb_cycleBtn.MouseButton1Click:Connect(function()
-        qb_cycleThrowType(false)
-    end)
-    qb_lockBtn.MouseButton1Click:Connect(function()
-        if qb_lockedTarget then qb_unlockTarget()
-        else qb_lockCurrentTarget() end
-    end)
+    -- Cycle type
+    local cycleBtn = makeTouchBtn("CycleBtn",1,1,-16,-(BTN_SIZE*4+46),"TYPE",Color3.fromRGB(50,160,80))
+    cycleBtn.MouseButton1Click:Connect(function() qbCycle(false) end)
+    -- Next/prev receiver
+    local nextBtn = makeTouchBtn("RcvrNext",1,1,-(BTN_SIZE+10),-16,"Rcvr>",Color3.fromRGB(50,140,200))
+    nextBtn.MouseButton1Click:Connect(function() qbCycleTarget(false) end)
+    local prevBtn = makeTouchBtn("RcvrPrev",1,1,-(BTN_SIZE+10),-(BTN_SIZE+26),"<Rcvr",Color3.fromRGB(30,100,160))
+    prevBtn.MouseButton1Click:Connect(function() qbCycleTarget(true) end)
 end
-
 -- ================================================================
-
+-- PERF BEAM
 -- ================================================================
--- SECTION 5 — QB PERFECT BEAM (QBPerfectBeam.lua)
--- ================================================================
-local perfBeamEnabled    = false
-local perfBeamConnection = nil
-
+local perfBeamEnabled=false; local perfBeamConn=nil
 local function perfBeam_start()
-    if perfBeamConnection then return end
-    perfBeamConnection = Workspace.ChildAdded:Connect(function(b)
-        if b.Name ~= "Football" or not b:IsA("BasePart") then return end
-        task.wait()
-        local char = Player.Character
-        local root = char and char:FindFirstChild("HumanoidRootPart")
-        if not root then return end
-        if (b.Position - root.Position).Magnitude > 9 then return end
-
-        local vel = b.Velocity; local pos = b.Position
-        local c0, c1, cf1, cf2 = beamProjectile(Vector3.new(0,-28,0), vel, pos, 10)
-
-        local beam = Instance.new("Beam")
-        local a0   = Instance.new("Attachment")
-        local a1   = Instance.new("Attachment")
-        beam.Color       = ColorSequence.new(Color3.fromRGB(255,255,255))
-        beam.CurveSize0  = c0; beam.CurveSize1 = c1
-        beam.Name        = "PerfHitbox"
-        beam.Parent      = Workspace.Terrain
-        beam.Segments    = 1750
-        beam.FaceCamera  = true
-        beam.Width0      = 1; beam.Width1 = 1
-        beam.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0,    1),
-            NumberSequenceKeypoint.new(0.01, 0),
-            NumberSequenceKeypoint.new(0.99, 0),
-            NumberSequenceKeypoint.new(1,    0.01),
-        })
-        a0.Parent = Workspace.Terrain; a0.CFrame = cf1
-        a1.Parent = Workspace.Terrain; a1.CFrame = cf2
-        beam.Attachment0 = a0; beam.Attachment1 = a1
-
-        local landedConn
-        landedConn = RunService.Heartbeat:Connect(function()
-            if not b or b.Velocity.Magnitude < 1 then
-                landedConn:Disconnect()
-                task.delay(0.5, function()
-                    pcall(function() beam:Destroy(); a0:Destroy(); a1:Destroy() end)
-                end)
-            end
-        end)
-        task.spawn(function()
-            repeat task.wait() until not b.Parent or b.Parent ~= Workspace
-            pcall(function() beam:Destroy(); a0:Destroy(); a1:Destroy() end)
-        end)
+    if perfBeamConn then return end
+    perfBeamConn=WS.ChildAdded:Connect(function(b)
+        if b.Name~="Football" or not b:IsA("BasePart") then return end; task.wait()
+        local c=Player.Character; local r=c and c:FindFirstChild("HumanoidRootPart"); if not r or (b.Position-r.Position).Magnitude>9 then return end
+        local c0,c1,cf1,cf2=beamProj(Vector3.new(0,-28,0),b.Velocity,b.Position,10)
+        local bm=Instance.new("Beam"); local a0=Instance.new("Attachment"); local a1=Instance.new("Attachment")
+        bm.Color=ColorSequence.new(Color3.fromRGB(255,255,255)); bm.CurveSize0=c0; bm.CurveSize1=c1; bm.Name="PerfHitbox"; bm.Parent=WS.Terrain; bm.Segments=1750; bm.FaceCamera=true; bm.Width0=1; bm.Width1=1
+        bm.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.01,0),NumberSequenceKeypoint.new(0.99,0),NumberSequenceKeypoint.new(1,0.01)})
+        a0.Parent=WS.Terrain; a0.CFrame=cf1; a1.Parent=WS.Terrain; a1.CFrame=cf2; bm.Attachment0=a0; bm.Attachment1=a1
+        local lc; lc=RunService.Heartbeat:Connect(function() if not b or b.Velocity.Magnitude<1 then lc:Disconnect(); task.delay(0.5,function() pcall(function() bm:Destroy();a0:Destroy();a1:Destroy() end) end) end end)
+        task.spawn(function() repeat task.wait() until not b.Parent or b.Parent~=WS; pcall(function() bm:Destroy();a0:Destroy();a1:Destroy() end) end)
+        task.delay(15, function() pcall(function() bm:Destroy();a0:Destroy();a1:Destroy() end) end)
     end)
 end
-
-local function perfBeam_stop()
-    if perfBeamConnection then perfBeamConnection:Disconnect(); perfBeamConnection = nil end
-    for _, v in pairs(Workspace:GetChildren()) do
-        if v:IsA("Beam") and v.Name == "PerfHitbox" then v:Destroy() end
-    end
-end
-
-if perfBeamEnabled then perfBeam_start() end
+local function perfBeam_stop() if perfBeamConn then perfBeamConn:Disconnect(); perfBeamConn=nil end; for _,v in pairs(WS:GetChildren()) do if v:IsA("Beam") and v.Name=="PerfHitbox" then v:Destroy() end end end
 
 -- ================================================================
--- SECTION 6 — TRAJECTORY ARC — removed per user request
+-- CATCHING & PHYSICS
 -- ================================================================
-local trajEnabled = false  -- kept as variable so UI toggle reference doesn't error
+local autocatchon=false;local catchdistance=10;local magson=false;local magsrange=0
+local magsdelayon=false;local magsdelay=0;local showhitboxon=false;local hitboxes={}
+local catchresizeon=false;local catchresizerange=10;local lmgg=0;local magmode="FTI"
+local speedEnabled=false;local speedValue=0.1;local movementLoop=nil
+local jumpoweron=false;local jumpboost=50;local nojpcooldownon=false;local njcconnections={}
+local pullvector=false;local pullvectorpower=1;local pullvectordistance=5
+local clicktackleon=false;local clicktacklerange=5;local ballpathOn=false
+local ballpathColor=Color3.fromRGB(128,0,128);local ballpathConn=nil;local deleteOOBEnabled=false
 
--- ================================================================
--- SECTION 7 — CATCHING & PHYSICS (Kali_Hub source)
--- ================================================================
-local autocatchon        = false
-local catchdistance      = 10
-local magson             = false
-local magsrange          = 0
-local magsdelayon        = false
-local magsdelay          = 0
-local showhitboxon       = false
-local hitboxes           = {}
-local catchresizeon      = false
-local catchresizerange   = 10
-local lmgg               = 0
-local magmode            = "FTI"
-local speedEnabled       = false
-local speedValue         = 0.1
-local movementLoop       = nil
-local jumpoweron         = false
-local jumpboost          = 50
-local nojpcooldownon     = false
-local njcconnections     = {}
-local pullvector         = false
-local pullvectorpower    = 1
-local pullvectordistance = 5
-local clicktackleon      = false
-local clicktacklerange   = 5
-local ballpathOn         = false
-local ballpathColor      = Color3.fromRGB(128, 0, 128)
-local ballpathConnection = nil
-local deleteOOBEnabled   = false
+local function fcb() if not Char or not Char:FindFirstChild("HumanoidRootPart") then return nil end; local hp=Char.HumanoidRootPart.Position; local cl,md=nil,math.huge; for _,b in pairs(WS:GetChildren()) do if b.Name:lower():match("football") and b:IsA("BasePart") and not b.Anchored then local d=(hp-b.Position).Magnitude; if d<md then cl=b;md=d end end end; return cl,md end
+local function hitboxx(o) if not o or hitboxes[o] or not magson or not showhitboxon then return end; local holder=o:FindFirstAncestorOfClass("Model"); if holder and Players:GetPlayerFromCharacter(holder) then return end; local hx=Instance.new("Part"); hx.Name="Hitbox"; hx.Size=Vector3.new(magsrange,magsrange,magsrange); hx.Anchored=true; hx.CanCollide=false; hx.Transparency=0.2; hx.Material=Enum.Material.ForceField; hx.Color=Color3.fromRGB(128,0,128); hx.CastShadow=false; hx.CFrame=o.CFrame; hx.Shape=Enum.PartType.Ball; hx.Parent=o; hitboxes[o]={part=hx}; local conn; conn=RunService.Heartbeat:Connect(function() if not o or not o.Parent or not magson or not showhitboxon then if hx then hx:Destroy() end if conn then conn:Disconnect() end hitboxes[o]=nil; return end; hx.CFrame=o.CFrame; hx.Size=Vector3.new(magsrange,magsrange,magsrange) end) end
+local function fitbalsize() for o,d in pairs(hitboxes) do if d and d.part then d.part.Size=Vector3.new(magsrange,magsrange,magsrange) else if d and d.part then d.part:Destroy() end hitboxes[o]=nil end end end
+local function removeHitboxes() for _,d in pairs(hitboxes) do if d.part then d.part:Destroy() end end; hitboxes={} end
+local function footballhitbox() if not magson then return end; for _,c in pairs(WS:GetChildren()) do if c.Name:lower():match("football") and c:IsA("BasePart") then hitboxx(c) end end end
+local function getfutbal() if not (Char and Char:FindFirstChild("HumanoidRootPart")) then return nil end; local pp=Char.HumanoidRootPart.Position; local cl,md=nil,math.huge; for _,c in pairs(WS:GetChildren()) do if c.Name:lower():match("football") and c:IsA("BasePart") then local d=(c.Position-pp).Magnitude; if d<md and d<=magsrange then cl=c;md=d end end end; return cl end
+local function catchPart(ball) if not ball or not Char then return nil end; local cl=Char:FindFirstChild("CatchLeft"); local cr=Char:FindFirstChild("CatchRight"); local best,md=nil,math.huge; local bp=ball.Position; if cl and cl:IsA("BasePart") then local d=(cl.Position-bp).Magnitude; if d<md then best=cl;md=d end end; if cr and cr:IsA("BasePart") then local d=(cr.Position-bp).Magnitude; if d<md then best=cr;md=d end end; return best end
+local function rrrrrrrsizenugget(ch) if not ch then return end; local sz=catchresizeon and Vector3.new(catchresizerange,catchresizerange,catchresizerange) or Vector3.new(0.75,5,1.5); local cl=ch:FindFirstChild("CatchLeft"); local cr=ch:FindFirstChild("CatchRight"); if cl then cl.Size=sz;cl.Transparency=1 end; if cr then cr.Size=sz;cr.Transparency=1 end end
+local function startMov() if not movementLoop then movementLoop=RunService.Heartbeat:Connect(function(dt) if not speedEnabled then return end; local h=Char and Char:FindFirstChild("Humanoid"); if h and h.MoveDirection.Magnitude>0 then Hrp.CFrame=Hrp.CFrame+(h.MoveDirection*speedValue*8*dt) end end) end end
+local function stopMov() if movementLoop then movementLoop:Disconnect(); movementLoop=nil end end
+local function whenmoving(c) if not c then return end; local h=c:WaitForChild("Humanoid"); local r=c:WaitForChild("HumanoidRootPart"); h.StateChanged:Connect(function(_,s) if s==Enum.HumanoidStateType.Jumping and jumpoweron then task.wait(0.05); r.AssemblyLinearVelocity=r.AssemblyLinearVelocity+Vector3.new(0,jumpboost-50,0) end end) end
+local function njc(c) if not c then return end; local h=c:WaitForChild("Humanoid"); local co=RunService.Stepped:Connect(function() if nojpcooldownon then h:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end end); njcconnections[c]=co end
+local function findCT(mx) if not Char then return nil end; local hp=Char:FindFirstChild("HumanoidRootPart"); if not hp then return nil end; local cl,cd=nil,mx; for _,p in ipairs(Players:GetPlayers()) do if p==Player or p.Team==Player.Team then continue end; local tc=p.Character; if not tc then continue end; local th=tc:FindFirstChild("HumanoidRootPart"); if not th then continue end; local hB=false; for _,i in ipairs(tc:GetChildren()) do if i:IsA("Tool") and i.Name:match("Football") then hB=true;break end end; if not hB then continue end; local d=(hp.Position-th.Position).Magnitude; if d<cd then cd=d;cl=tc end end; return cl end
+local function TriggerTouch() local x=Camera.ViewportSize.X/2; local y=Camera.ViewportSize.Y/2; VIM:SendTouchEvent(1,Enum.UserInputState.Begin.Value,x,y); task.wait(0.005); VIM:SendTouchEvent(1,Enum.UserInputState.End.Value,x,y) end
 
-local function findclosestball()
-    if not Char or not Char:FindFirstChild("HumanoidRootPart") then return nil end
-    local hrp = Char.HumanoidRootPart
-    local closest, mindist = nil, math.huge
-    for _, ball in pairs(Workspace:GetChildren()) do
-        if ball.Name:lower():match("football") and ball:IsA("BasePart") and not ball.Anchored then
-            local d = (hrp.Position - ball.Position).Magnitude
-            if d < mindist then closest, mindist = ball, d end
-        end
-    end
-    return closest, mindist
-end
-
-local function hitboxx(oid)
-    if not oid or hitboxes[oid] or not magson or not showhitboxon then return end
-    local holder = oid:FindFirstAncestorOfClass("Model")
-    if holder and Players:GetPlayerFromCharacter(holder) then return end
-    local hitbox = Instance.new("Part")
-    hitbox.Name        = "Hitbox"
-    hitbox.Size        = Vector3.new(magsrange, magsrange, magsrange)
-    hitbox.Anchored    = true
-    hitbox.CanCollide  = false
-    hitbox.Transparency = 0.2
-    hitbox.Material    = Enum.Material.ForceField
-    hitbox.Color       = Color3.fromRGB(128, 0, 128)
-    hitbox.CastShadow  = false
-    hitbox.CFrame      = oid.CFrame
-    hitbox.Shape       = Enum.PartType.Ball
-    hitbox.Parent      = oid
-    hitboxes[oid]      = {part = hitbox}
-    local conn
-    conn = RunService.Heartbeat:Connect(function()
-        if not oid or not oid.Parent or not magson or not showhitboxon then
-            if hitbox then hitbox:Destroy() end
-            if conn then conn:Disconnect() end
-            hitboxes[oid] = nil; return
-        end
-        hitbox.CFrame = oid.CFrame
-        hitbox.Size   = Vector3.new(magsrange, magsrange, magsrange)
-    end)
-end
-
-local function fitbalsize()
-    for oid, data in pairs(hitboxes) do
-        if data and data.part then
-            data.part.Size  = Vector3.new(magsrange, magsrange, magsrange)
-        else
-            if data and data.part then data.part:Destroy() end
-            hitboxes[oid] = nil
-        end
-    end
-end
-
-local function removeHitboxes()
-    for _, data in pairs(hitboxes) do
-        if data.part then data.part:Destroy() end
-    end
-    hitboxes = {}
-end
-
-local function footballhitbox()
-    if not magson then return end
-    for _, child in pairs(Workspace:GetChildren()) do
-        if child.Name:lower():match("football") and child:IsA("BasePart") then hitboxx(child) end
-    end
-end
-
-local function getfutbal()
-    if not (Char and Char:FindFirstChild("HumanoidRootPart")) then return nil end
-    local pp = Char.HumanoidRootPart.Position
-    local closest, mindist = nil, math.huge
-    for _, child in pairs(Workspace:GetChildren()) do
-        if child.Name:lower():match("football") and child:IsA("BasePart") then
-            local d = (child.Position - pp).Magnitude
-            if d < mindist and d <= magsrange then closest, mindist = child, d end
-        end
-    end
-    return closest
-end
-
-local function catchPart(ball)
-    if not ball or not Char then return nil end
-    local cl = Char:FindFirstChild("CatchLeft")
-    local cr = Char:FindFirstChild("CatchRight")
-    local closest, mindist = nil, math.huge
-    local bp = ball.Position
-    -- No magsrange filter here — range is for hitbox display only;
-    -- the mag loop uses getfutbal() which already filters by magsrange.
-    if cl and cl:IsA("BasePart") then
-        local d = (cl.Position - bp).Magnitude
-        if d < mindist then closest, mindist = cl, d end
-    end
-    if cr and cr:IsA("BasePart") then
-        local d = (cr.Position - bp).Magnitude
-        if d < mindist then closest, mindist = cr, d end
-    end
-    return closest
-end
-
-local function rrrrrrrsizenugget(character)
-    if not character then return end
-    local sizes = catchresizeon
-        and Vector3.new(catchresizerange, catchresizerange, catchresizerange)
-        or  Vector3.new(0.75, 5, 1.5)
-    local cl = character:FindFirstChild("CatchLeft")
-    local cr = character:FindFirstChild("CatchRight")
-    if cl then cl.Size = sizes; cl.Transparency = 1 end
-    if cr then cr.Size = sizes; cr.Transparency = 1 end
-end
-
-local function startMovementSystem()
-    if not movementLoop then
-        movementLoop = RunService.Heartbeat:Connect(function(dt)
-            if not speedEnabled then return end
-            local hum = Char and Char:FindFirstChild("Humanoid")
-            if hum and hum.MoveDirection.Magnitude > 0 then
-                Hrp.CFrame = Hrp.CFrame + (hum.MoveDirection * speedValue * 8 * dt)
-            end
-        end)
-    end
-end
-
-local function stopMovementSystem()
-    if movementLoop then movementLoop:Disconnect(); movementLoop = nil end
-end
-
-local function whenmoving(character)
-    if not character then return end
-    local hum = character:WaitForChild("Humanoid")
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    hum.StateChanged:Connect(function(_, state)
-        if state == Enum.HumanoidStateType.Jumping and jumpoweron then
-            task.wait(0.05)
-            hrp.AssemblyLinearVelocity = hrp.AssemblyLinearVelocity + Vector3.new(0, jumpboost - 50, 0)
-        end
-    end)
-end
-
-local function njc(char)
-    if not char then return end
-    local hum = char:WaitForChild("Humanoid")
-    local conn = RunService.Stepped:Connect(function()
-        if nojpcooldownon then hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end
-    end)
-    njcconnections[char] = conn
-end
-
-local function findclosesttackle(maxd)
-    if not Char then return nil end
-    local hrp = Char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nil end
-    local closest, closestd = nil, maxd
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr == Player or plr.Team == Player.Team then continue end
-        local tc = plr.Character
-        if not tc then continue end
-        local thrp = tc:FindFirstChild("HumanoidRootPart")
-        if not thrp then continue end
-        local hasBall = false
-        for _, item in ipairs(tc:GetChildren()) do
-            if item:IsA("Tool") and item.Name:match("Football") then hasBall = true; break end
-        end
-        if not hasBall then continue end
-        local d = (hrp.Position - thrp.Position).Magnitude
-        if d < closestd then closestd = d; closest = tc end
-    end
-    return closest
-end
-
-local function TriggerTouchEvent()
-    local xPos = Camera.ViewportSize.X / 2
-    local yPos = Camera.ViewportSize.Y / 2
-    VIM:SendTouchEvent(1, Enum.UserInputState.Begin.Value,  xPos, yPos)
-    task.wait(0.005)
-    VIM:SendTouchEvent(1, Enum.UserInputState.End.Value,    xPos, yPos)
-end
-
--- Main Heartbeat
 RunService.Heartbeat:Connect(function(dt)
     if not Hrp then return end
-    if magson then
-        local ball = getfutbal()
-        if ball then
-            local cnp = tick()
-            if magsdelayon and (cnp - lmgg) < magsdelay then
-                -- wait
-            else
-                local cp = catchPart(ball)
-                if cp then
-                    if magmode == "CFrame" then
-                        ball.CFrame = cp.CFrame
-                    else
-                        if typeof(firetouchinterest) == "function" then
-                            -- ball must touch the catch part, so: firetouchinterest(catchPart, ball, ...)
-                            pcall(firetouchinterest, ball, cp, 0)
-                            task.wait()
-                            pcall(firetouchinterest, ball, cp, 1)
-                        else
-                            ball.CFrame = cp.CFrame
-                        end
-                    end
-                end
-                if magsdelayon then lmgg = cnp end
-            end
+    if not magson then return end
+    local ball=getfutbal(); if not ball then return end
+    local cnp=tick()
+    if magsdelayon and (cnp-lmgg)<magsdelay then return end
+    local cp=catchPart(ball); if not cp then return end
+
+    if magmode=="CFrame" then
+        local dist=(ball.Position-cp.Position).Magnitude
+        -- Ease-in curve: slow start (looks natural), fast finish
+        -- Uses cubic ease: slow from far, fast near hands
+        local t = math.clamp(dist / math.max(magsrange, 1), 0, 1)
+        local ease = 1 - t*t*t  -- cubic ease-in, 0 when far, 1 when close
+        local speed = 6 + ease * 18  -- 6 studs/s far, 24 studs/s close
+        local alpha = math.clamp(dt * speed, 0, 0.92)
+        -- Lerp position smoothly, keep ball's original rotation until very close
+        if dist > 1.5 then
+            -- Far: lerp only position, keep ball's existing rotation intact
+            local newPos = ball.Position:Lerp(cp.Position, alpha)
+            -- Extract rotation-only CFrame by rebuilding from components
+            local rx,ry,rz,r00,r01,r02,r10,r11,r12,r20,r21,r22 = ball.CFrame:GetComponents()
+            ball.CFrame = CFrame.new(newPos.X,newPos.Y,newPos.Z, r00,r01,r02,r10,r11,r12,r20,r21,r22)
+        else
+            -- Close: full CFrame snap into hands
+            ball.CFrame = ball.CFrame:Lerp(cp.CFrame, alpha)
+        end
+    else
+        if typeof(firetouchinterest)=="function" then
+            pcall(firetouchinterest,ball,cp,0)
+            task.wait()
+            pcall(firetouchinterest,ball,cp,1)
+        else
+            local dist=(ball.Position-cp.Position).Magnitude
+            local t=math.clamp(dist/math.max(magsrange,1),0,1)
+            local ease=1-t*t*t
+            local alpha=math.clamp(dt*(6+ease*18),0,0.92)
+            ball.CFrame=ball.CFrame:Lerp(cp.CFrame,alpha)
         end
     end
-end)
 
-Workspace.ChildAdded:Connect(function(child)
-    if child.Name:lower():match("football") and magson and showhitboxon and child:IsA("BasePart") then
-        hitboxx(child)
-    end
+    if magsdelayon then lmgg=cnp end
 end)
+WS.ChildAdded:Connect(function(c) if c.Name:lower():match("football") and magson and showhitboxon and c:IsA("BasePart") then hitboxx(c) end end)
+task.spawn(function() while task.wait(0.02) do if not autocatchon then continue end; local b,d=fcb(); if b and d<=catchdistance then TriggerTouch() end end end)
+task.spawn(function() while task.wait(0.1) do if not pullvector or not Char or not Hrp then continue end; for _,b in pairs(WS:GetChildren()) do if b.Name:lower():match("football") and b:IsA("BasePart") then local d=(Hrp.Position-b.Position).Magnitude; if d<=pullvectordistance then Hrp.AssemblyLinearVelocity=(b.Position-Hrp.Position).Unit*pullvectorpower*25 end end end end end)
+task.spawn(function() while task.wait(1) do if not deleteOOBEnabled then continue end; for _,o in pairs(WS:GetChildren()) do if o:IsA("BasePart") and o.Position.Y<-100 then o:Destroy() end end end end)
 
-task.spawn(function()
-    while task.wait(0.02) do
-        if not autocatchon then continue end
-        local ball, distance = findclosestball()
-        if ball and distance <= catchdistance then TriggerTouchEvent() end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.1) do
-        if not pullvector or not Char or not Hrp then continue end
-        for _, ball in pairs(Workspace:GetChildren()) do
-            if ball.Name:lower():match("football") and ball:IsA("BasePart") then
-                local d = (Hrp.Position - ball.Position).Magnitude
-                if d <= pullvectordistance then
-                    local dir = (ball.Position - Hrp.Position).Unit
-                    Hrp.AssemblyLinearVelocity = dir * pullvectorpower * 25
-                end
-            end
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(1) do
-        if not deleteOOBEnabled then continue end
-        for _, obj in pairs(Workspace:GetChildren()) do
-            if obj:IsA("BasePart") and obj.Position.Y < -100 then obj:Destroy() end
-        end
-    end
-end)
-
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-       or input.UserInputType == Enum.UserInputType.Touch then
-        if clicktackleon then
-            local tc = findclosesttackle(clicktacklerange)
-            if tc and tc:FindFirstChild("HumanoidRootPart") and Hrp then
-                Hrp.CFrame = tc.HumanoidRootPart.CFrame
-            end
-        end
-    end
-end)
-
-if Player.Character then
-    rrrrrrrsizenugget(Player.Character); whenmoving(Player.Character); njc(Player.Character)
-end
-Player.CharacterAdded:Connect(function(char)
-    rrrrrrrsizenugget(char); whenmoving(char); njc(char)
-    removeHitboxes()
-end)
+UIS.InputBegan:Connect(function(inp,gpe) if gpe then return end; if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then if clicktackleon then local tc=findCT(clicktacklerange); if tc and tc:FindFirstChild("HumanoidRootPart") and Hrp then Hrp.CFrame=tc.HumanoidRootPart.CFrame end end end end)
+if Player.Character then rrrrrrrsizenugget(Player.Character); whenmoving(Player.Character); njc(Player.Character) end
+Player.CharacterAdded:Connect(function(c) rrrrrrrsizenugget(c); whenmoving(c); njc(c); removeHitboxes() end)
 
 -- ================================================================
--- SECTION 8A — KICKER AIMBOT (KickerAimbot.lua)
+-- KICKER AIMBOT v3
+-- Strategy: monitor ALL bar-like elements for the one that's actively
+-- animating (value changing frame-to-frame). Click when threshold hit.
+-- Supports Position.Y.Scale, Size.Y.Scale, and AbsolutePosition.Y
 -- ================================================================
 local kickerAutoEnabled = false
-local kickerPower       = 95    -- 1-100: higher = more power (cursor click earlier)
-local kickerAcc         = 75    -- 1-100: higher = more accuracy (cursor click later)
+local kickerPower = 95
+local kickerAcc   = 75
 
+-- ================================================================
+-- KICKER AIMBOT (ported from confirmed working Aethel reference)
+-- FF2 KickerGui has a "Cursor" child whose Position.Y.Scale sweeps
+-- from 0->1 during each phase. We click at power/accuracy thresholds.
+-- ================================================================
 local function handleKickerGui(child)
     if child.Name ~= "KickerGui" or not kickerAutoEnabled then return end
     task.spawn(function()
-        -- wait for Cursor to exist
+        -- Wait for Cursor to exist (up to 5s)
         local cursor
         local deadline = tick() + 5
-        repeat cursor = child:FindFirstChild("Cursor", true); task.wait() until cursor or tick() > deadline
+        repeat
+            cursor = child:FindFirstChild("Cursor", true)
+            task.wait()
+        until cursor or tick() > deadline
         if not cursor then return end
 
-        -- Wait until cursor descends to power threshold (top of bar = low Y, so we wait until Y grows)
+        -- Phase 1: Power -- click when cursor.Y.Scale reaches power threshold
+        -- Low threshold = click early = less power; high = more power
         local powerThreshold = 0.01 + ((100 - kickerPower) * 0.012)
         repeat task.wait() until not child.Parent
             or cursor.Position.Y.Scale >= powerThreshold
         if not child.Parent then return end
-        -- Delta-compatible click (mouse1click not available in Delta)
-        local _cx = Camera.ViewportSize.X / 2
-        local _cy = Camera.ViewportSize.Y / 2
-        VIM:SendMouseButtonEvent(_cx, _cy, 0, true,  game, 1)
-        task.wait(0.05)
-        VIM:SendMouseButtonEvent(_cx, _cy, 0, false, game, 1)
 
-        -- Wait until cursor reaches accuracy threshold
+        local cx = Camera.ViewportSize.X / 2
+        local cy = Camera.ViewportSize.Y / 2
+        VIM:SendMouseButtonEvent(cx, cy, 0, true,  game, 1)
+        task.wait(0.05)
+        VIM:SendMouseButtonEvent(cx, cy, 0, false, game, 1)
+
+        -- Phase 2: Accuracy -- wait, then click when cursor reaches accuracy threshold
+        task.wait(0.15)
         local accThreshold = 0.9 - ((100 - kickerAcc) * 0.001)
         repeat task.wait() until not child.Parent
             or cursor.Position.Y.Scale >= accThreshold
         if not child.Parent then return end
-        -- Delta-compatible click
-        local _cx2 = Camera.ViewportSize.X / 2
-        local _cy2 = Camera.ViewportSize.Y / 2
-        VIM:SendMouseButtonEvent(_cx2, _cy2, 0, true,  game, 1)
+
+        VIM:SendMouseButtonEvent(cx, cy, 0, true,  game, 1)
         task.wait(0.05)
-        VIM:SendMouseButtonEvent(_cx2, _cy2, 0, false, game, 1)
+        VIM:SendMouseButtonEvent(cx, cy, 0, false, game, 1)
     end)
 end
 
@@ -1254,835 +1221,786 @@ Player:WaitForChild("PlayerGui").ChildAdded:Connect(function(child)
 end)
 
 -- ================================================================
--- SECTION 8B — KICK EXTENDER (KickExtender.lua)
+-- KICK EXTENDER
 -- ================================================================
-local kickExtendEnabled = false
-local kickExtendSize    = 15
-
-local function applyKickExtend(v)
-    if not kickExtendEnabled then return end
-    if v:IsA("BasePart") then
-        local ks = v:FindFirstChild("KickingSound")
-        if ks and ks:IsA("Sound") and v.Parent == Workspace then
-            v.Size = Vector3.new(kickExtendSize, kickExtendSize, kickExtendSize)
-        end
-    end
-end
-
-local kickExtendConn = nil
-
-local function startKickExtend()
-    if kickExtendConn then return end
-    for _, v in pairs(Workspace:GetChildren()) do applyKickExtend(v) end
-    kickExtendConn = Workspace.DescendantAdded:Connect(function(v)
-        task.wait()
-        applyKickExtend(v)
-    end)
-end
-
-local function stopKickExtend()
-    if kickExtendConn then kickExtendConn:Disconnect(); kickExtendConn = nil end
-end
+local kickExtendEnabled=false; local kickExtendSize=15; local kickExtConn=nil
+local function applyKE(v) if not kickExtendEnabled or not v:IsA("BasePart") then return end; local ks=v:FindFirstChild("KickingSound"); if ks and ks:IsA("Sound") and v.Parent==WS then v.Size=Vector3.new(kickExtendSize,kickExtendSize,kickExtendSize) end end
+local function startKE() if kickExtConn then return end; for _,v in pairs(WS:GetChildren()) do applyKE(v) end; kickExtConn=WS.DescendantAdded:Connect(function(v) task.wait(); applyKE(v) end) end
+local function stopKE() if kickExtConn then kickExtConn:Disconnect(); kickExtConn=nil end end
 
 -- ================================================================
--- SECTION 8C — TACKLE AIMBOT (TackleAimbot.lua)
+-- TACKLE AIMBOT
 -- ================================================================
-local tackleAimbotEnabled = false
-local tackleAimbotRange   = 15
-
-local function runTackleAimbot(character)
-    if not tackleAimbotEnabled then return end
-    local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
-    if not playerRoot then return end
-
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player == Player then continue end
-        local tc = player.Character
-        if not tc then continue end
-
-        -- Only target players who have the football
-        local hasBall = false
-        for _, item in ipairs(tc:GetDescendants()) do
-            if item:IsA("Tool") and item.Name:lower():find("football") then
-                hasBall = true; break
-            end
-        end
-        if not hasBall then continue end
-
-        local catchRight = tc:FindFirstChild("CatchRight")
-        if not catchRight then continue end
-
-        local dist = (playerRoot.Position - catchRight.Position).Magnitude
-        if dist >= tackleAimbotRange then continue end
-
-        -- Teleport our CatchRight onto their CatchRight
-        local myCR = character:FindFirstChild("CatchRight")
-        if myCR then
-            myCR.CFrame = CFrame.new(catchRight.Position)
-            return  -- only tackle the nearest ball carrier
-        end
-    end
-end
-
--- Hook into the existing M1 InputBegan (runs alongside click tackle)
--- We use a dedicated connection so it's independently toggleable
-local tackleAimbotConn = nil
-
-local function setupTackleAimbot(character)
-    if tackleAimbotConn then tackleAimbotConn:Disconnect() end
-    tackleAimbotConn = UserInputService.InputBegan:Connect(function(input, gpe)
-        if gpe or not tackleAimbotEnabled then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-           or input.UserInputType == Enum.UserInputType.Touch
-           or (input.UserInputType == Enum.UserInputType.Gamepad1
-               and input.KeyCode == Enum.KeyCode.ButtonR2) then
-            runTackleAimbot(character or Player.Character)
-        end
-    end)
-end
-
-if Player.Character then setupTackleAimbot(Player.Character) end
-Player.CharacterAdded:Connect(function(c) setupTackleAimbot(c) end)
+local tackleAimbotEnabled=false; local tackleAimbotRange=15
+local function runTA(ch) if not tackleAimbotEnabled then return end; local pr=ch and ch:FindFirstChild("HumanoidRootPart"); if not pr then return end; for _,p in ipairs(Players:GetPlayers()) do if p==Player then continue end; local tc=p.Character; if not tc then continue end; local hB=false; for _,i in ipairs(tc:GetDescendants()) do if i:IsA("Tool") and i.Name:lower():find("football") then hB=true;break end end; if not hB then continue end; local cr=tc:FindFirstChild("CatchRight"); if not cr then continue end; if (pr.Position-cr.Position).Magnitude>=tackleAimbotRange then continue end; local mcr=ch:FindFirstChild("CatchRight"); if mcr then mcr.CFrame=CFrame.new(cr.Position); return end end end
+local tAC=nil; local function setupTA(c) if tAC then tAC:Disconnect() end; tAC=UIS.InputBegan:Connect(function(inp,gpe) if gpe or not tackleAimbotEnabled then return end; if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch or (inp.UserInputType==Enum.UserInputType.Gamepad1 and inp.KeyCode==Enum.KeyCode.ButtonR2) then runTA(c or Player.Character) end end) end
+if Player.Character then setupTA(Player.Character) end; Player.CharacterAdded:Connect(function(c) setupTA(c) end)
 
 -- ================================================================
--- SECTION 8E — ANTI-LAG (Anti-Lag.lua)
+-- TACKLE REACH
 -- ================================================================
-local antiLagEnabled = false
-
-local function applyAntiLag()
-    for _, part in pairs(Workspace:GetDescendants()) do
-        if part:IsA("BasePart") then
-            pcall(function() part.Material = Enum.Material.SmoothPlastic end)
-        end
-    end
-end
-
--- ================================================================
--- SECTION 8F — TACKLE REACH (TackleReach.lua)
--- ================================================================
-local tackleReachEnabled = false
-local tackleReachRange   = 15
-
-local function runTackleReach()
-    if not tackleReachEnabled then return end
-    local character = Char
-    local hrp = character and character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    -- FF2: football is a BasePart named "Football" in workspace
-    -- The carrier is whoever is closest to it
-    local football = Workspace:FindFirstChild("Football")
-
-    for _, target in pairs(Players:GetPlayers()) do
-        if target == Player then continue end
-        local tc = target.Character
-        if not tc then continue end
-        local targetHrp = tc:FindFirstChild("HumanoidRootPart")
-        if not targetHrp then continue end
-
-        -- Ball carrier check: player's HRP is within 6 studs of the football
-        local hasBall = false
-        if football and football:IsA("BasePart") then
-            hasBall = (football.Position - targetHrp.Position).Magnitude < 6
-        end
-        -- Fallback: check for Tool in character
-        if not hasBall then
-            hasBall = tc:FindFirstChildOfClass("Tool") ~= nil
-        end
-        if not hasBall then continue end
-
-        local dist = (hrp.Position - targetHrp.Position).Magnitude
-        if dist > tackleReachRange then continue end
-
-        for _, targetPart in pairs(tc:GetChildren()) do
-            if targetPart:IsA("BasePart") then
-                local myPart = character:FindFirstChild(targetPart.Name)
-                if myPart then
-                    pcall(function()
-                        if typeof(firetouchinterest) == "function" then
-                            firetouchinterest(myPart, targetPart, 0)
-                        end
-                    end)
-                end
-            end
-        end
-    end
-end
-
-RunService.Heartbeat:Connect(runTackleReach)
-
--- ================================================================
--- SECTION 8G — BLOCK REACH (BlockReach.lua)
--- ================================================================
-local blockReachEnabled = false
-local blockReachSize    = 20
-local blockReachOpacity = 0.5
-
-local function applyBlockReach(character)
-    if not character then return end
-    local blockP = character:FindFirstChild("BlockPart")
-    if not blockP then return end
-    if blockReachEnabled then
-        blockP.Size        = Vector3.new(blockReachSize, blockReachSize, blockReachSize)
-        blockP.Transparency = blockReachOpacity
-    else
-        -- Reset to default values
-        blockP.Size        = Vector3.new(2, 2, 2)
-        blockP.Transparency = 1
-    end
-end
-
-local function refreshBlockReach()
-    applyBlockReach(Char)
-end
-
-Player.CharacterAdded:Connect(function(c)
-    task.wait(1) -- wait for BlockPart to load
-    applyBlockReach(c)
+local tackleReachEnabled=false; local tackleReachRange=15
+RunService.Heartbeat:Connect(function()
+    if not tackleReachEnabled then return end; local c=Char; local h=c and c:FindFirstChild("HumanoidRootPart"); if not h then return end
+    local fb=WS:FindFirstChild("Football")
+    for _,t in pairs(Players:GetPlayers()) do if t==Player then continue end; local tc=t.Character; if not tc then continue end; local th=tc:FindFirstChild("HumanoidRootPart"); if not th then continue end; local hB=false; if fb and fb:IsA("BasePart") then hB=(fb.Position-th.Position).Magnitude<6 end; if not hB then hB=tc:FindFirstChildOfClass("Tool")~=nil end; if not hB then continue end; if (h.Position-th.Position).Magnitude>tackleReachRange then continue end; for _,p in pairs(tc:GetChildren()) do if p:IsA("BasePart") then local mp=c:FindFirstChild(p.Name); if mp then pcall(function() if typeof(firetouchinterest)=="function" then firetouchinterest(mp,p,0) end end) end end end end
 end)
 
 -- ================================================================
--- SECTION 8 — CUSTOM UI  (ExampleUI style)
+-- BLOCK REACH
 -- ================================================================
-
--- ── Services already defined above ───────────────────────────────
--- TweenService, UserInputService, Players, Player already declared
-
--- ── Cleanup old UI ───────────────────────────────────────────────
-local _pg = Player:WaitForChild("PlayerGui")
-if _pg:FindFirstChild("AethelHubUI") then _pg.AethelHubUI:Destroy() end
+local blockReachEnabled=false; local blockReachSize=20; local blockReachOpacity=0.5
+local function applyBR(c) if not c then return end; local bp=c:FindFirstChild("BlockPart"); if not bp then return end; if blockReachEnabled then bp.Size=Vector3.new(blockReachSize,blockReachSize,blockReachSize);bp.Transparency=blockReachOpacity else bp.Size=Vector3.new(2,2,2);bp.Transparency=1 end end
+local function refreshBR() applyBR(Char) end
+Player.CharacterAdded:Connect(function(c) task.wait(1); applyBR(c) end)
 
 -- ================================================================
--- UI CONSTANTS & COLORS
+-- ANTI LAG
 -- ================================================================
-local C_BG        = Color3.fromRGB(10, 10, 20)
-local C_TITLEBAR  = Color3.fromRGB(6, 6, 16)
-local C_ROW       = Color3.fromRGB(13, 13, 26)
-local C_ACCENT    = Color3.fromRGB(108, 99, 255)
-local C_ACCENT2   = Color3.fromRGB(80, 72, 200)
-local C_STROKE    = Color3.fromRGB(60, 50, 120)
-local C_TEXT      = Color3.fromRGB(210, 210, 210)
-local C_TABTEXT   = Color3.fromRGB(160, 155, 230)
-local C_DIMTEXT   = Color3.fromRGB(120, 115, 160)
-local C_OFF       = Color3.fromRGB(26, 26, 46)
-local C_OFFSTROKE = Color3.fromRGB(50, 50, 80)
-local C_GREEN     = Color3.fromRGB(80, 210, 120)
+local antiLagEnabled=false
+local function applyAL() for _,p in pairs(WS:GetDescendants()) do if p:IsA("BasePart") then pcall(function() p.Material=Enum.Material.SmoothPlastic end) end end end
 
 -- ================================================================
--- SCREEN GUI
+-- UI
 -- ================================================================
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name           = "AethelHubUI"
-ScreenGui.ResetOnSpawn   = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.DisplayOrder   = 5
-ScreenGui.Parent         = _pg
+-- Clean up any existing instance (re-execution safety)
+pcall(function() CoreGui:FindFirstChild("KasenHubUI"):Destroy() end)
+pcall(function() Player.PlayerGui:FindFirstChild("KasenHubUI"):Destroy() end)
+local isMobile=UIS.TouchEnabled and not UIS.KeyboardEnabled
 
--- ── Main window ──────────────────────────────────────────────────
-local WIN_W, WIN_H = 400, 380
-local MainFrame = Instance.new("Frame")
-MainFrame.Name             = "MainFrame"
-MainFrame.Size             = UDim2.new(0, WIN_W, 0, WIN_H)
-MainFrame.Position         = UDim2.new(0, 8, 0, 8)   -- top-left, out of the way
-MainFrame.BackgroundColor3 = C_BG
-MainFrame.BorderSizePixel  = 0
-MainFrame.Parent           = ScreenGui
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
-local _ms = Instance.new("UIStroke", MainFrame)
-_ms.Color = C_STROKE; _ms.Thickness = 1.5
+local ScreenGui=Instance.new("ScreenGui")
+ScreenGui.Name="KasenHubUI"; ScreenGui.ResetOnSpawn=false
+ScreenGui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+ScreenGui.IgnoreGuiInset=true
+ScreenGui.DisplayOrder=9999  -- above everything, including game's own UI
+ScreenGui.Parent=CoreGui    -- CoreGui always renders on top of PlayerGui
 
--- ── Title bar ────────────────────────────────────────────────────
-local TitleBar = Instance.new("Frame")
-TitleBar.Size             = UDim2.new(1, 0, 0, 46)
-TitleBar.BackgroundColor3 = C_TITLEBAR
-TitleBar.BorderSizePixel  = 0
-TitleBar.Parent           = MainFrame
-Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 12)
--- patch bottom corners
-local _tbfix = Instance.new("Frame", TitleBar)
-_tbfix.Size = UDim2.new(1,0,0.5,0); _tbfix.Position = UDim2.new(0,0,0.5,0)
-_tbfix.BackgroundColor3 = C_TITLEBAR; _tbfix.BorderSizePixel = 0
-
-local TitleLabel = Instance.new("TextLabel", TitleBar)
-TitleLabel.Size = UDim2.new(1,-90,1,0); TitleLabel.Position = UDim2.new(0,14,0,0)
-TitleLabel.BackgroundTransparency = 1; TitleLabel.Text = "✦  Aethel Hub"
-TitleLabel.TextColor3 = Color3.fromRGB(130,140,255); TitleLabel.TextSize = 15
-TitleLabel.Font = Enum.Font.GothamBold; TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
--- Close button
-local CloseBtn = Instance.new("TextButton", TitleBar)
-CloseBtn.Size = UDim2.new(0,34,0,34); CloseBtn.Position = UDim2.new(1,-40,0.5,-17)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(180,40,40); CloseBtn.Text = "✕"
-CloseBtn.TextColor3 = Color3.fromRGB(255,255,255); CloseBtn.TextSize = 14
-CloseBtn.Font = Enum.Font.GothamBold; CloseBtn.BorderSizePixel = 0
-Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0,8)
-CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
-
--- Hide button
-local HideBtn = Instance.new("TextButton", TitleBar)
-HideBtn.Size = UDim2.new(0,34,0,34); HideBtn.Position = UDim2.new(1,-80,0.5,-17)
-HideBtn.BackgroundColor3 = Color3.fromRGB(40,40,80); HideBtn.Text = "—"
-HideBtn.TextColor3 = Color3.fromRGB(200,200,255); HideBtn.TextSize = 15
-HideBtn.Font = Enum.Font.GothamBold; HideBtn.BorderSizePixel = 0
-Instance.new("UICorner", HideBtn).CornerRadius = UDim.new(0,8)
-
--- Show button (bigger, easy to tap on mobile)
-local ShowBtn = Instance.new("TextButton", ScreenGui)
-ShowBtn.Size = UDim2.new(0,130,0,40); ShowBtn.Position = UDim2.new(0,8,0,8)
-ShowBtn.BackgroundColor3 = C_BG; ShowBtn.Text = "▶  Aethel Hub"
-ShowBtn.TextColor3 = Color3.fromRGB(200,200,255); ShowBtn.TextSize = 13
-ShowBtn.Font = Enum.Font.GothamBold; ShowBtn.BorderSizePixel = 0; ShowBtn.Visible = false
-Instance.new("UICorner", ShowBtn).CornerRadius = UDim.new(0,10)
-local _showS = Instance.new("UIStroke", ShowBtn)
-_showS.Color = C_STROKE; _showS.Thickness = 1.5
-
--- UI opens automatically after key is accepted; Hide button minimises it
-
-HideBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(MainFrame, TweenInfo.new(0.18), {Size = UDim2.new(0,WIN_W,0,0)}):Play()
-    task.delay(0.2, function() MainFrame.Visible = false; ShowBtn.Visible = true end)
+-- Toggle button
+-- Toggle button: large, centered at bottom of screen, draggable, works on mobile & PC
+local ToggleBtn=Instance.new("TextButton",ScreenGui)
+ToggleBtn.BackgroundColor3=Color3.fromRGB(88,62,200); ToggleBtn.BorderSizePixel=0
+ToggleBtn.AnchorPoint=Vector2.new(0.5,1)
+ToggleBtn.Position=UDim2.new(0.5,0,1,-18)
+ToggleBtn.Size=UDim2.new(0,isMobile and 120 or 96, 0, isMobile and 54 or 44)
+ToggleBtn.Font=Enum.Font.GothamBold; ToggleBtn.Text="Kasen Hub"
+ToggleBtn.TextColor3=Color3.fromRGB(255,255,255)
+ToggleBtn.TextSize=isMobile and 16 or 14
+ToggleBtn.ZIndex=200; ToggleBtn.Draggable=true
+Instance.new("UICorner",ToggleBtn).CornerRadius=UDim.new(0,10)
+local tgStroke=Instance.new("UIStroke",ToggleBtn)
+tgStroke.Color=Color3.fromRGB(160,130,255); tgStroke.Thickness=2
+-- Gradient on toggle button
+local tgGrad=Instance.new("UIGradient",ToggleBtn)
+tgGrad.Color=ColorSequence.new(Color3.fromRGB(108,78,230),Color3.fromRGB(68,42,180))
+tgGrad.Rotation=90
+-- Pulse glow on load to draw attention
+task.spawn(function()
+    for _ = 1, 4 do
+        TS:Create(tgStroke,TweenInfo.new(0.4,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Thickness=4,Color=Color3.fromRGB(200,170,255)}):Play()
+        TS:Create(ToggleBtn,TweenInfo.new(0.4,Enum.EasingStyle.Sine),{BackgroundColor3=Color3.fromRGB(120,90,240)}):Play()
+        task.wait(0.45)
+        TS:Create(tgStroke,TweenInfo.new(0.4,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Thickness=2,Color=Color3.fromRGB(160,130,255)}):Play()
+        TS:Create(ToggleBtn,TweenInfo.new(0.4,Enum.EasingStyle.Sine),{BackgroundColor3=Color3.fromRGB(88,62,200)}):Play()
+        task.wait(0.45)
+    end
 end)
-ShowBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true; ShowBtn.Visible = false
-    MainFrame.Size = UDim2.new(0,WIN_W,0,0)
-    TweenService:Create(MainFrame, TweenInfo.new(0.18), {Size = UDim2.new(0,WIN_W,0,WIN_H)}):Play()
+ToggleBtn.MouseEnter:Connect(function()
+    TS:Create(tgStroke,TweenInfo.new(0.12),{Thickness=3,Color=Color3.fromRGB(200,170,255)}):Play()
+    TS:Create(ToggleBtn,TweenInfo.new(0.12),{BackgroundColor3=Color3.fromRGB(112,82,228)}):Play()
+end)
+ToggleBtn.MouseLeave:Connect(function()
+    TS:Create(tgStroke,TweenInfo.new(0.18),{Thickness=2,Color=Color3.fromRGB(160,130,255)}):Play()
+    TS:Create(ToggleBtn,TweenInfo.new(0.18),{BackgroundColor3=Color3.fromRGB(88,62,200)}):Play()
 end)
 
--- Divider under title
-local _div = Instance.new("Frame", MainFrame)
-_div.Size = UDim2.new(1,-24,0,1); _div.Position = UDim2.new(0,12,0,46)
-_div.BackgroundColor3 = Color3.fromRGB(40,35,80); _div.BorderSizePixel = 0
+-- Main frame
+local GW=isMobile and 360 or 460; local GH=isMobile and 440 or 500
+local MainFrame=Instance.new("Frame",ScreenGui)
+MainFrame.BackgroundColor3=Color3.fromRGB(18,18,24); MainFrame.BorderSizePixel=0
+-- Center of screen
+MainFrame.AnchorPoint=Vector2.new(0.5,0.5)
+MainFrame.Position=UDim2.new(0.5,0,0.5,0)
+MainFrame.Size=UDim2.new(0,GW,0,GH)
+MainFrame.ClipsDescendants=true; MainFrame.Active=true; MainFrame.Draggable=true
+MainFrame.Visible=true   -- open by default
+Instance.new("UICorner",MainFrame).CornerRadius=UDim.new(0,5)
+local mStroke=Instance.new("UIStroke",MainFrame); mStroke.Color=Color3.fromRGB(75,65,110); mStroke.Thickness=1; mStroke.Transparency=0.15
+-- Subtle vertical gradient on main bg
+local mGrad=Instance.new("UIGradient",MainFrame)
+mGrad.Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,   Color3.fromRGB(22,22,32)),
+    ColorSequenceKeypoint.new(1,   Color3.fromRGB(15,15,22))
+})
+mGrad.Rotation=90
 
--- ── Drag ─────────────────────────────────────────────────────────
-do
-    local _df, _ds, _sp = false, nil, nil
-    TitleBar.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then
-            _df = true; _ds = inp.Position; _sp = MainFrame.Position
-        end
-    end)
-    UserInputService.InputChanged:Connect(function(inp)
-        if _df and (inp.UserInputType == Enum.UserInputType.MouseMovement
-                 or inp.UserInputType == Enum.UserInputType.Touch) then
-            local d = inp.Position - _ds
-            MainFrame.Position = UDim2.new(_sp.X.Scale, _sp.X.Offset+d.X,
-                                           _sp.Y.Scale, _sp.Y.Offset+d.Y)
-        end
-    end)
-    UserInputService.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then _df = false end
-    end)
-end
+-- Title bar
+local TitleBar=Instance.new("Frame",MainFrame)
+TitleBar.BackgroundColor3=Color3.fromRGB(26,26,34); TitleBar.BorderSizePixel=0; TitleBar.Size=UDim2.new(1,0,0,44)
+TitleBar.ZIndex=10  -- always above scroll content
+Instance.new("UICorner",TitleBar).CornerRadius=UDim.new(0,5)
+local TitleLbl=Instance.new("TextLabel",TitleBar)
+TitleLbl.BackgroundTransparency=1; TitleLbl.Position=UDim2.new(0,15,0,0); TitleLbl.Size=UDim2.new(0.7,0,1,0)
+TitleLbl.Font=Enum.Font.GothamBold; TitleLbl.Text="Kasen Hub | FF2"
+TitleLbl.TextColor3=Color3.fromRGB(220,220,230); TitleLbl.TextSize=15; TitleLbl.TextXAlignment=Enum.TextXAlignment.Left; TitleLbl.ZIndex=10
+local CloseBtn=Instance.new("TextButton",TitleBar)
+CloseBtn.BackgroundColor3=Color3.fromRGB(185,55,55); CloseBtn.BorderSizePixel=0
+CloseBtn.Position=UDim2.new(1,-36,0.5,-12); CloseBtn.Size=UDim2.new(0,24,0,24)
+CloseBtn.Font=Enum.Font.GothamBold; CloseBtn.Text="x"; CloseBtn.TextColor3=Color3.fromRGB(200,200,210); CloseBtn.TextSize=16; CloseBtn.ZIndex=10
+Instance.new("UICorner",CloseBtn).CornerRadius=UDim.new(0,4)
 
--- ================================================================
--- TAB BAR
--- ================================================================
-local TAB_NAMES = {"Catching","Physics","QB / Throw","Kicker","Tackle","Movement","Misc"}
-local activeTab = nil
-local tabButtons = {}
-local tabFrames  = {}
+-- Header blocker: covers top 98px so scrolled content doesn't bleed over title/tabs
+local HeaderCover=Instance.new("Frame",MainFrame)
+HeaderCover.BackgroundColor3=Color3.fromRGB(18,18,24); HeaderCover.BorderSizePixel=0
+HeaderCover.Size=UDim2.new(1,0,0,98); HeaderCover.Position=UDim2.new(0,0,0,0)
+HeaderCover.ZIndex=9  -- below title (10) but above scroll (1)
 
-local TabBar = Instance.new("Frame", MainFrame)
-TabBar.Size = UDim2.new(1,-2,0,32)
-TabBar.Position = UDim2.new(0,1,0,47)
-TabBar.BackgroundColor3 = Color3.fromRGB(8,8,18)
-TabBar.BorderSizePixel = 0
-local _tbLayout = Instance.new("UIListLayout", TabBar)
-_tbLayout.FillDirection = Enum.FillDirection.Horizontal
-_tbLayout.Padding = UDim.new(0,0)
-_tbLayout.SortOrder = Enum.SortOrder.LayoutOrder
+-- Tab container
+local TabCont=Instance.new("Frame",MainFrame)
+TabCont.BackgroundColor3=Color3.fromRGB(22,22,30); TabCont.BorderSizePixel=0
+TabCont.Position=UDim2.new(0,10,0,52); TabCont.Size=UDim2.new(1,-20,0,36)
+TabCont.ZIndex=10  -- always above scroll content
+Instance.new("UICorner",TabCont).CornerRadius=UDim.new(0,5)
 
--- Tab divider
-local _tabDiv = Instance.new("Frame", MainFrame)
-_tabDiv.Size = UDim2.new(1,-2,0,1); _tabDiv.Position = UDim2.new(0,1,0,79)
-_tabDiv.BackgroundColor3 = Color3.fromRGB(40,35,80); _tabDiv.BorderSizePixel = 0
+local TAB_NAMES={"Catching","Physics","QB","Kicker","Tackle","Misc"}
+local tabBtns={}; local tabPages={}
 
--- Content area
-local ContentArea = Instance.new("Frame", MainFrame)
-ContentArea.Size = UDim2.new(1,-2,1,-82)
-ContentArea.Position = UDim2.new(0,1,0,81)
-ContentArea.BackgroundTransparency = 1
-ContentArea.BorderSizePixel = 0
-ContentArea.ClipsDescendants = true
-
-local function makeTabFrame()
-    local sf = Instance.new("ScrollingFrame", ContentArea)
-    sf.Size = UDim2.new(1,0,1,0); sf.Position = UDim2.new(0,0,0,0)
-    sf.BackgroundTransparency = 1; sf.BorderSizePixel = 0
-    sf.ScrollBarThickness = 3
-    sf.ScrollBarImageColor3 = C_ACCENT
-    sf.CanvasSize = UDim2.new(0,0,0,0)
-    sf.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    sf.Visible = false
-    local ll = Instance.new("UIListLayout", sf)
-    ll.Padding = UDim.new(0,5)
-    local pad = Instance.new("UIPadding", sf)
-    pad.PaddingLeft = UDim.new(0,12); pad.PaddingRight = UDim.new(0,12)
-    pad.PaddingTop = UDim.new(0,8);   pad.PaddingBottom = UDim.new(0,10)
-    return sf
-end
-
+local currentTab = nil
 local function switchTab(name)
-    for n, f in pairs(tabFrames) do
-        f.Visible = (n == name)
+    if currentTab==name then return end
+    for n,pg in pairs(tabPages) do
+        pg.Visible = (n==name)
+        if n==name then
+            pg.Position=UDim2.new(0,0,0,98)
+        end
     end
-    for n, b in pairs(tabButtons) do
-        b.BackgroundColor3 = (n == name) and C_ACCENT2 or Color3.fromRGB(8,8,18)
-        b.TextColor3        = (n == name) and Color3.fromRGB(255,255,255) or C_TABTEXT
+    for n,b in pairs(tabBtns) do
+        local active=(n==name)
+        b.BackgroundColor3 = active and Color3.fromRGB(88,62,200) or Color3.fromRGB(34,34,46)
+        b.TextColor3 = active and Color3.fromRGB(255,255,255) or Color3.fromRGB(175,175,185)
     end
-    activeTab = name
+    currentTab=name
 end
 
-local tabW = math.floor(WIN_W / #TAB_NAMES)
-for i, name in ipairs(TAB_NAMES) do
-    local btn = Instance.new("TextButton", TabBar)
-    btn.Size = UDim2.new(0, tabW, 1, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(8,8,18)
-    btn.BorderSizePixel = 0
-    btn.Text = name
-    btn.TextColor3 = C_TABTEXT
-    btn.TextSize = 11
-    btn.Font = Enum.Font.GothamBold
-    btn.LayoutOrder = i
-    btn.AutoButtonColor = false
-    btn.TextScaled = false
-    btn.ClipsDescendants = true
-    Instance.new("UITextSizeConstraint", btn).MaxTextSize = 11
-    tabButtons[name] = btn
-    tabFrames[name]  = makeTabFrame()
+for i,name in ipairs(TAB_NAMES) do
+    local tw=1/#TAB_NAMES
+    local btn=Instance.new("TextButton",TabCont)
+    btn.BorderSizePixel=0; btn.Font=Enum.Font.GothamBold; btn.Text=name; btn.TextSize=isMobile and 9 or 10; btn.AutoButtonColor=false
+    btn.Position=UDim2.new((i-1)*tw,i==1 and 3 or 2,0,4); btn.Size=UDim2.new(tw,-4,1,-8)
+    btn.BackgroundColor3=Color3.fromRGB(34,34,46); btn.TextColor3=Color3.fromRGB(175,175,185)
+    btn.ZIndex=10
+    Instance.new("UICorner",btn).CornerRadius=UDim.new(0,4); tabBtns[name]=btn
+
+    local pg=Instance.new("ScrollingFrame",MainFrame)
+    pg.BackgroundTransparency=1; pg.Position=UDim2.new(0,0,0,98)
+    pg.Size=UDim2.new(1,0,1,-98); pg.Visible=false
+    pg.ScrollBarThickness=6; pg.ScrollBarImageColor3=Color3.fromRGB(88,62,200)
+    pg.BorderSizePixel=0; pg.CanvasSize=UDim2.new(0,0,0,0)
+    pg.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    pg.ScrollingEnabled=true
+    pg.ClipsDescendants=false  -- allows dropdown lists to overflow without being cut
+    tabPages[name]=pg
+
+    local ll=Instance.new("UIListLayout",pg); ll.Padding=UDim.new(0,5); ll.SortOrder=Enum.SortOrder.LayoutOrder
+    local pad=Instance.new("UIPadding",pg); pad.PaddingTop=UDim.new(0,8); pad.PaddingBottom=UDim.new(0,10); pad.PaddingLeft=UDim.new(0,10); pad.PaddingRight=UDim.new(0,10)
     btn.MouseButton1Click:Connect(function() switchTab(name) end)
 end
 
--- ================================================================
--- UI HELPER FUNCTIONS
--- ================================================================
-
-local function AddSection(parent, title)
-    local lbl = Instance.new("TextLabel", parent)
-    lbl.Size = UDim2.new(1,0,0,20)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = title:upper()
-    lbl.TextColor3 = C_ACCENT
-    lbl.TextSize = 10
-    lbl.Font = Enum.Font.GothamBold
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
+-- hover helper
+local function hover(btn,norm,hi)
+    btn.MouseEnter:Connect(function() TS:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=hi}):Play() end)
+    btn.MouseLeave:Connect(function() TS:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=norm}):Play() end)
 end
 
-local function AddLabel(parent, text)
-    local lbl = Instance.new("TextLabel", parent)
-    lbl.Size = UDim2.new(1,0,0,18)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = text
-    lbl.TextColor3 = C_DIMTEXT
-    lbl.TextSize = 11
-    lbl.Font = Enum.Font.Gotham
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
+-- ================================================================
+-- UI HELPERS
+-- ================================================================
+local function addSect(pg,txt)
+    local wrap=Instance.new("Frame",pg)
+    wrap.BackgroundTransparency=1; wrap.Size=UDim2.new(1,0,0,22)
+    local l=Instance.new("TextLabel",wrap)
+    l.BackgroundTransparency=1; l.Size=UDim2.new(1,-6,1,0); l.Position=UDim2.new(0,6,0,0)
+    l.Font=Enum.Font.GothamBold; l.Text=txt
+    l.TextColor3=Color3.fromRGB(138,115,240); l.TextSize=11
+    l.TextXAlignment=Enum.TextXAlignment.Left
+    -- Accent line beneath section label
+    local line=Instance.new("Frame",wrap)
+    line.BackgroundColor3=Color3.fromRGB(60,50,100); line.BorderSizePixel=0
+    line.Position=UDim2.new(0,0,1,-1); line.Size=UDim2.new(1,0,0,1)
 end
 
-local function AddToggle(parent, labelText, default, callback)
-    local state = default or false
-    local Row = Instance.new("Frame", parent)
-    Row.Size = UDim2.new(1,0,0,38)
-    Row.BackgroundColor3 = C_ROW
-    Row.BorderSizePixel = 0
-    Instance.new("UICorner", Row).CornerRadius = UDim.new(0,8)
-
-    local lbl = Instance.new("TextLabel", Row)
-    lbl.Size = UDim2.new(1,-52,1,0); lbl.Position = UDim2.new(0,12,0,0)
-    lbl.BackgroundTransparency = 1; lbl.Text = labelText
-    lbl.TextColor3 = C_TEXT; lbl.TextSize = 12; lbl.Font = Enum.Font.Gotham
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-
-    local tbtn = Instance.new("TextButton", Row)
-    tbtn.Size = UDim2.new(0,26,0,26); tbtn.Position = UDim2.new(1,-38,0.5,-13)
-    tbtn.BackgroundColor3 = state and C_ACCENT or C_OFF
-    tbtn.Text = state and "✓" or ""; tbtn.TextColor3 = Color3.fromRGB(255,255,255)
-    tbtn.TextSize = 13; tbtn.Font = Enum.Font.GothamBold; tbtn.BorderSizePixel = 0
-    Instance.new("UICorner", tbtn).CornerRadius = UDim.new(0,6)
-    local tks = Instance.new("UIStroke", tbtn)
-    tks.Color = state and C_ACCENT or C_OFFSTROKE; tks.Thickness = 1.5
-
-    tbtn.MouseButton1Click:Connect(function()
+local function addToggle(pg,lbl,callback)
+    local btn=Instance.new("TextButton",pg)
+    btn.BackgroundColor3=Color3.fromRGB(185,55,55); btn.BorderSizePixel=0
+    btn.Size=UDim2.new(1,0,0,44); btn.Font=Enum.Font.GothamSemibold
+    btn.Text=lbl..": OFF"; btn.TextColor3=Color3.fromRGB(230,230,235); btn.TextSize=13
+    Instance.new("UICorner",btn).CornerRadius=UDim.new(0,4)
+    local state=false
+    local COL_OFF=Color3.fromRGB(185,55,55)
+    local COL_OFF_HI=Color3.fromRGB(210,70,70)
+    local COL_ON=Color3.fromRGB(44,130,70)
+    local COL_ON_HI=Color3.fromRGB(60,160,85)
+    -- Use MouseButton1Click (not Down) so ScrollingFrame doesn't eat it
+    btn.MouseButton1Click:Connect(function()
         state = not state
-        TweenService:Create(tbtn, TweenInfo.new(0.15), {BackgroundColor3 = state and C_ACCENT or C_OFF}):Play()
-        tks.Color = state and C_ACCENT or C_OFFSTROKE
-        tbtn.Text = state and "✓" or ""
+        btn.Text = lbl .. (state and ": ON" or ": OFF")
+        TS:Create(btn, TweenInfo.new(0.18), {
+            BackgroundColor3 = state and COL_ON or COL_OFF
+        }):Play()
         if callback then callback(state) end
     end)
-    return Row
+    -- Inline hover that respects current state
+    btn.MouseEnter:Connect(function()
+        TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=state and COL_ON_HI or COL_OFF_HI}):Play() end)
+    btn.MouseLeave:Connect(function()
+        TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=state and COL_ON or COL_OFF}):Play() end)
+    return btn
 end
 
-local function AddSlider(parent, labelText, minVal, maxVal, default, rounding, callback)
-    rounding = rounding or 1
-    local value = default or minVal
-    local dragging = false
+local function addInfo(pg,txt)
+    local l=Instance.new("TextLabel",pg); l.BackgroundColor3=Color3.fromRGB(26,26,34); l.BorderSizePixel=0
+    l.Size=UDim2.new(1,0,0,30); l.Font=Enum.Font.Gotham; l.Text=txt
+    l.TextColor3=Color3.fromRGB(175,175,185); l.TextSize=11; l.TextWrapped=true; l.TextXAlignment=Enum.TextXAlignment.Left
+    Instance.new("UICorner",l).CornerRadius=UDim.new(0,4)
+    local p=Instance.new("UIPadding",l); p.PaddingLeft=UDim.new(0,8); p.PaddingTop=UDim.new(0,4)
+end
 
-    local Con = Instance.new("Frame", parent)
-    Con.Size = UDim2.new(1,0,0,52)
-    Con.BackgroundColor3 = C_ROW
-    Con.BorderSizePixel = 0
-    Instance.new("UICorner", Con).CornerRadius = UDim.new(0,8)
+-- SLIDER: thumb captures MouseButton1Down, UIS.GetMouseLocation() for drag position
+-- This works inside ScrollingFrames because we bypass InputBegan on nested frames entirely
+local function addSlider(pg,lbl,mn,mx,def,isFloat,callback)
+    -- isFloat now always shows decimals; integer sliders snap to 0.5 steps
+    local val=def; local dragging=false
+    local THUMB = isMobile and 28 or 22  -- bigger thumb on mobile
+    local TRACK_H = isMobile and 32 or 26
+    local WRAP_H  = isMobile and 64 or 56
 
-    local lbl = Instance.new("TextLabel", Con)
-    lbl.Size = UDim2.new(0.68,0,0,22); lbl.Position = UDim2.new(0,12,0,5)
-    lbl.BackgroundTransparency = 1; lbl.Text = labelText
-    lbl.TextColor3 = C_TEXT; lbl.TextSize = 12; lbl.Font = Enum.Font.Gotham
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    local wrap=Instance.new("Frame",pg)
+    wrap.BackgroundTransparency=1; wrap.Size=UDim2.new(1,0,0,WRAP_H)
 
-    local valLbl = Instance.new("TextLabel", Con)
-    valLbl.Size = UDim2.new(0.3,-12,0,22); valLbl.Position = UDim2.new(0.7,0,0,5)
-    valLbl.BackgroundTransparency = 1
-    valLbl.Text = rounding == 0 and string.format("%d", value) or string.format("%.2f", value)
-    valLbl.TextColor3 = C_ACCENT; valLbl.TextSize = 11; valLbl.Font = Enum.Font.GothamBold
-    valLbl.TextXAlignment = Enum.TextXAlignment.Right
+    local lbl2=Instance.new("TextLabel",wrap)
+    lbl2.BackgroundTransparency=1; lbl2.Position=UDim2.new(0,0,0,2); lbl2.Size=UDim2.new(1,0,0,22)
+    lbl2.Font=Enum.Font.GothamBold; lbl2.TextColor3=Color3.fromRGB(255,255,255)
+    lbl2.TextSize=isMobile and 14 or 13
+    lbl2.TextXAlignment=Enum.TextXAlignment.Left
 
-    local Track = Instance.new("Frame", Con)
-    Track.Size = UDim2.new(1,-24,0,5); Track.Position = UDim2.new(0,12,0,34)
-    Track.BackgroundColor3 = C_OFF; Track.BorderSizePixel = 0
-    Instance.new("UICorner", Track).CornerRadius = UDim.new(1,0)
+    -- Always show 2 decimal places for fine-tuning
+    local function fmtV(v)
+        return lbl..": "..string.format("%.2f", v)
+    end
+    lbl2.Text=fmtV(val)
 
-    local fillPct = (value - minVal) / math.max(maxVal - minVal, 0.001)
-    local Fill = Instance.new("Frame", Track)
-    Fill.Size = UDim2.new(fillPct,0,1,0); Fill.BackgroundColor3 = C_ACCENT; Fill.BorderSizePixel = 0
-    Instance.new("UICorner", Fill).CornerRadius = UDim.new(1,0)
+    local track=Instance.new("Frame",wrap)
+    track.BackgroundColor3=Color3.fromRGB(26,26,34); track.BorderSizePixel=0
+    track.Position=UDim2.new(0,0,0,28); track.Size=UDim2.new(1,0,0,TRACK_H)
+    Instance.new("UICorner",track).CornerRadius=UDim.new(0,6)
 
-    local Knob = Instance.new("Frame", Track)
-    Knob.Size = UDim2.new(0,12,0,12); Knob.Position = UDim2.new(fillPct,-6,0.5,-6)
-    Knob.BackgroundColor3 = Color3.fromRGB(255,255,255); Knob.BorderSizePixel = 0; Knob.ZIndex = 3
-    Instance.new("UICorner", Knob).CornerRadius = UDim.new(1,0)
-    local ks = Instance.new("UIStroke", Knob)
-    ks.Color = C_ACCENT; ks.Thickness = 2
+    local rail=Instance.new("Frame",track)
+    rail.BackgroundColor3=Color3.fromRGB(38,38,52); rail.BorderSizePixel=0
+    rail.Position=UDim2.new(0,16,0.5,-5); rail.Size=UDim2.new(1,-32,0,10)
+    Instance.new("UICorner",rail).CornerRadius=UDim.new(1,0)
 
-    local function update(ix)
-        local ts = Track.AbsoluteSize.X
-        if ts <= 1 then return end   -- frame not rendered yet, ignore
-        local tp  = Track.AbsolutePosition.X
-        local rel = math.clamp((ix - tp) / ts, 0, 1)
-        local raw = minVal + rel * (maxVal - minVal)
-        local rounded
-        if rounding == 0 then
-            rounded = math.floor(raw + 0.5)
+    local pct=(def-mn)/math.max(mx-mn,0.001)
+    local fill=Instance.new("Frame",rail)
+    fill.BackgroundColor3=Color3.fromRGB(100,75,220); fill.BorderSizePixel=0
+    fill.Size=UDim2.new(pct,0,1,0)
+    Instance.new("UICorner",fill).CornerRadius=UDim.new(1,0)
+    local fGrad=Instance.new("UIGradient",fill)
+    fGrad.Color=ColorSequence.new(Color3.fromRGB(150,120,255),Color3.fromRGB(88,62,200))
+    fGrad.Rotation=0
+
+    -- Large invisible hit area for easy mobile tapping
+    local hitBtn=Instance.new("TextButton",track)
+    hitBtn.BackgroundTransparency=1; hitBtn.BorderSizePixel=0
+    hitBtn.Position=UDim2.new(0,0,-0.5,0); hitBtn.Size=UDim2.new(1,0,2,0)
+    hitBtn.Text=""; hitBtn.AutoButtonColor=false; hitBtn.ZIndex=4
+
+    local half=THUMB/2
+    local thumb=Instance.new("Frame",rail)
+    thumb.BackgroundColor3=Color3.fromRGB(255,255,255); thumb.BorderSizePixel=0
+    thumb.Position=UDim2.new(pct,-half,0.5,-half); thumb.Size=UDim2.new(0,THUMB,0,THUMB)
+    thumb.ZIndex=5
+    Instance.new("UICorner",thumb).CornerRadius=UDim.new(1,0)
+    local tStroke=Instance.new("UIStroke",thumb); tStroke.Color=Color3.fromRGB(90,75,180); tStroke.Thickness=1.5
+
+    local function updateFromInput(inputX)
+        local sz=rail.AbsoluteSize.X; if sz<=1 then return end
+        local rel=math.clamp((inputX-rail.AbsolutePosition.X)/sz,0,1)
+        local raw=mn+rel*(mx-mn)
+        -- Fine decimal: always 2dp. Integer sliders still pass isFloat=false
+        -- but we now always show 2dp; callback gets rounded value for int sliders
+        local r
+        if isFloat then
+            r = math.floor(raw*100+0.5)/100
         else
-            local factor = 10 ^ rounding
-            rounded = math.floor(raw * factor + 0.5) / factor
+            -- snap to 0.1 increments for extra precision even on "integer" sliders
+            r = math.floor(raw*10+0.5)/10
         end
-        value = rounded
-        Fill.Size = UDim2.new(rel,0,1,0)
-        Knob.Position = UDim2.new(rel,-6,0.5,-6)
-        valLbl.Text = rounding == 0 and string.format("%d", rounded) or string.format("%.2f", rounded)
-        if callback then callback(rounded) end
+        val=r
+        TS:Create(fill,TweenInfo.new(0.04,Enum.EasingStyle.Linear),{Size=UDim2.new(rel,0,1,0)}):Play()
+        thumb.Position=UDim2.new(rel,-half,0.5,-half)
+        lbl2.Text=fmtV(r)
+        if callback then callback(r) end
     end
 
-    Track.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; update(inp.Position.X)
+    local function getInputX()
+        if isMobile then
+            -- use touch position
+            local touches=UIS:GetTouches()
+            if #touches>0 then return touches[1].Position.X end
+        end
+        return UIS:GetMouseLocation().X
+    end
+
+    hitBtn.MouseButton1Down:Connect(function()
+        dragging=true; updateFromInput(UIS:GetMouseLocation().X)
+        TS:Create(thumb,TweenInfo.new(0.08),{Size=UDim2.new(0,THUMB+6,0,THUMB+6),BackgroundColor3=Color3.fromRGB(225,215,255)}):Play()
+    end)
+    hitBtn.TouchLongPress:Connect(function(positions)
+        dragging=true
+        if #positions>0 then updateFromInput(positions[1].X) end
+        TS:Create(thumb,TweenInfo.new(0.08),{Size=UDim2.new(0,THUMB+6,0,THUMB+6),BackgroundColor3=Color3.fromRGB(225,215,255)}):Play()
+    end)
+    thumb.InputBegan:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+            dragging=true; updateFromInput(i.Position.X) end end)
+
+    UIS.InputChanged:Connect(function(i)
+        if not dragging then return end
+        if i.UserInputType==Enum.UserInputType.MouseMovement then
+            updateFromInput(UIS:GetMouseLocation().X)
+        elseif i.UserInputType==Enum.UserInputType.Touch then
+            updateFromInput(i.Position.X)
         end
     end)
-    UserInputService.InputChanged:Connect(function(inp)
-        if dragging and (inp.UserInputType == Enum.UserInputType.MouseMovement
-                      or inp.UserInputType == Enum.UserInputType.Touch) then
-            update(inp.Position.X)
+    UIS.InputEnded:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+            dragging=false
+            TS:Create(thumb,TweenInfo.new(0.1),{Size=UDim2.new(0,THUMB,0,THUMB),BackgroundColor3=Color3.fromRGB(255,255,255)}):Play()
         end
     end)
-    UserInputService.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then dragging = false end
-    end)
-    return Con
 end
 
-local function AddDropdown(parent, labelText, options, defaultIndex, callback)
-    defaultIndex = defaultIndex or 1
-    local selected = defaultIndex
-    local open = false
-
-    local Con = Instance.new("Frame", parent)
-    Con.Size = UDim2.new(1,0,0,38)
-    Con.BackgroundColor3 = C_ROW
-    Con.BorderSizePixel = 0
-    Instance.new("UICorner", Con).CornerRadius = UDim.new(0,8)
-    Con.ZIndex = 5
-
-    local lbl = Instance.new("TextLabel", Con)
-    lbl.Size = UDim2.new(0.55,0,1,0); lbl.Position = UDim2.new(0,12,0,0)
-    lbl.BackgroundTransparency = 1; lbl.Text = labelText
-    lbl.TextColor3 = C_TEXT; lbl.TextSize = 12; lbl.Font = Enum.Font.Gotham
-    lbl.TextXAlignment = Enum.TextXAlignment.Left; lbl.ZIndex = 5
-
-    local btn = Instance.new("TextButton", Con)
-    btn.Size = UDim2.new(0.42,0,0,26); btn.Position = UDim2.new(0.57,0,0.5,-13)
-    btn.BackgroundColor3 = C_ACCENT2; btn.BorderSizePixel = 0
-    btn.Text = options[selected] .. " ▾"
-    btn.TextColor3 = Color3.fromRGB(255,255,255); btn.TextSize = 11
-    btn.Font = Enum.Font.GothamBold; btn.ZIndex = 5
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
-
-    -- Dropdown list (appears below)
-    local list = Instance.new("Frame", Con)
-    list.Size = UDim2.new(0.42,0,0, #options * 28)
-    list.Position = UDim2.new(0.57,0,1,2)
-    list.BackgroundColor3 = Color3.fromRGB(18,18,32)
-    list.BorderSizePixel = 0; list.Visible = false; list.ZIndex = 10
-    Instance.new("UICorner", list).CornerRadius = UDim.new(0,6)
-    local ls = Instance.new("UIStroke", list); ls.Color = C_STROKE; ls.Thickness = 1; ls.ZIndex = 10
-    local ll = Instance.new("UIListLayout", list); ll.Padding = UDim.new(0,0)
-
-    for i, opt in ipairs(options) do
-        local ob = Instance.new("TextButton", list)
-        ob.Size = UDim2.new(1,0,0,28); ob.BackgroundTransparency = 1
-        ob.Text = opt; ob.TextColor3 = C_TEXT; ob.TextSize = 11
-        ob.Font = Enum.Font.Gotham; ob.ZIndex = 11
-        ob.MouseEnter:Connect(function() ob.TextColor3 = Color3.fromRGB(255,255,255) end)
-        ob.MouseLeave:Connect(function() ob.TextColor3 = C_TEXT end)
-        ob.MouseButton1Click:Connect(function()
-            selected = i
-            btn.Text = options[selected] .. " ▾"
-            list.Visible = false; open = false
-            if callback then callback(options[selected], selected) end
-        end)
+local function addDropdown(pg,lbl,options,defIdx,callback)
+    defIdx=defIdx or 1; local sel=defIdx; local open=false
+    local con=Instance.new("Frame",pg); con.BackgroundColor3=Color3.fromRGB(26,26,34); con.BorderSizePixel=0; con.Size=UDim2.new(1,0,0,44); con.ZIndex=5
+    Instance.new("UICorner",con).CornerRadius=UDim.new(0,4)
+    local ll=Instance.new("TextLabel",con); ll.BackgroundTransparency=1; ll.Position=UDim2.new(0,10,0,0); ll.Size=UDim2.new(0.55,0,1,0); ll.Font=Enum.Font.GothamBold; ll.Text=lbl; ll.TextColor3=Color3.fromRGB(255,255,255); ll.TextSize=12; ll.TextXAlignment=Enum.TextXAlignment.Left; ll.ZIndex=5
+    local selB=Instance.new("TextButton",con); selB.BackgroundColor3=Color3.fromRGB(88,62,200); selB.BorderSizePixel=0; selB.Position=UDim2.new(0.57,0,0.5,-13); selB.Size=UDim2.new(0.41,0,0,26); selB.Font=Enum.Font.GothamBold; selB.Text=options[sel].." v"; selB.TextColor3=Color3.fromRGB(255,255,255); selB.TextSize=11; selB.ZIndex=5; Instance.new("UICorner",selB).CornerRadius=UDim.new(0,4)
+    local list=Instance.new("Frame",con); list.BackgroundColor3=Color3.fromRGB(22,22,36); list.BorderSizePixel=0; list.Size=UDim2.new(0.41,0,0,#options*26); list.Position=UDim2.new(0.57,0,1,2); list.Visible=false; list.ZIndex=10
+    Instance.new("UICorner",list).CornerRadius=UDim.new(0,4); Instance.new("UIStroke",list).Color=Color3.fromRGB(88,62,200)
+    local ll2=Instance.new("UIListLayout",list); ll2.Padding=UDim.new(0,0)
+    for i,opt in ipairs(options) do
+        local ob=Instance.new("TextButton",list); ob.Size=UDim2.new(1,0,0,26); ob.BackgroundTransparency=1; ob.Text=opt; ob.TextColor3=Color3.fromRGB(175,175,185); ob.TextSize=11; ob.Font=Enum.Font.Gotham; ob.ZIndex=11
+        ob.MouseEnter:Connect(function() ob.TextColor3=Color3.fromRGB(255,255,255) end); ob.MouseLeave:Connect(function() ob.TextColor3=Color3.fromRGB(175,175,185) end)
+        ob.MouseButton1Click:Connect(function() sel=i; selB.Text=options[sel].." v"; list.Visible=false; open=false; con.Size=UDim2.new(1,0,0,44); if callback then callback(options[sel],sel) end end)
     end
-
-    btn.MouseButton1Click:Connect(function()
-        open = not open; list.Visible = open
-    end)
-    -- Expand parent height when open
-    list:GetPropertyChangedSignal("Visible"):Connect(function()
-        Con.Size = list.Visible
-            and UDim2.new(1,0,0, 38 + #options*28 + 4)
-            or  UDim2.new(1,0,0, 38)
-    end)
-
-    if callback then callback(options[selected], selected) end
-    return Con
+    selB.MouseButton1Click:Connect(function() open=not open; list.Visible=open; con.Size=open and UDim2.new(1,0,0,44+#options*26+4) or UDim2.new(1,0,0,44) end)
+    if callback then callback(options[sel],sel) end
 end
 
 -- ================================================================
 -- CATCHING TAB
 -- ================================================================
-local tfCatch = tabFrames["Catching"]
-AddSection(tfCatch, "Mags")
-AddSlider(tfCatch, "Mag Range", 0, 20, 0, 1, function(v)
-    magsrange = v; if magson and showhitboxon then fitbalsize() end
-end)
-AddToggle(tfCatch, "Mags", false, function(v)
-    magson = v
-    if not v then removeHitboxes() elseif showhitboxon then footballhitbox() end
-end)
-AddSlider(tfCatch, "Mag Delay", 0, 1, 0, 1, function(v)
-    magsdelay = v; magsdelayon = v > 0
-end)
-AddDropdown(tfCatch, "Mag Mode", {"FTI", "CFrame"}, 1, function(v)
-    magmode = v
-end)
-AddToggle(tfCatch, "Show Hitbox", false, function(v)
-    showhitboxon = v
-    if not v then removeHitboxes() elseif magson then footballhitbox() end
-end)
-AddToggle(tfCatch, "Auto Catch", false, function(v) autocatchon = v end)
-AddSlider(tfCatch, "Auto Catch Radius", 1, 25, 10, 1, function(v) catchdistance = v end)
-
-AddSection(tfCatch, "Football")
-AddToggle(tfCatch, "Ball Path", false, function(v)
-    ballpathOn = v
-    if not v then
-        if ballpathConnection then ballpathConnection:Disconnect(); ballpathConnection = nil end
-        for _, obj in ipairs(Workspace.Terrain:GetChildren()) do
-            if obj:IsA("Beam") and obj.Name == "BallPath" then obj:Destroy()
-            elseif obj:IsA("Attachment") and obj.Name == "BallPathAtt" then obj:Destroy() end
-        end
-    else
-        if ballpathConnection then ballpathConnection:Disconnect() end
-        ballpathConnection = Workspace.ChildAdded:Connect(function(ball)
-            if not (ball.Name:lower():find("football") and ball:IsA("BasePart")) then return end
-            task.wait()
-            local vel = ball.Velocity; local pos = ball.Position
-            local c0, c1, cf1, cf2 = beamProjectile(Vector3.new(0,-28,0), vel, pos, 10)
-            local bm = Instance.new("Beam")
-            local ba0 = Instance.new("Attachment"); local ba1 = Instance.new("Attachment")
-            bm.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,ballpathColor),ColorSequenceKeypoint.new(1,ballpathColor)}
-            bm.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.01,0),NumberSequenceKeypoint.new(0.99,0),NumberSequenceKeypoint.new(1,0.01)}
-            bm.CurveSize0=c0; bm.CurveSize1=c1; bm.Segments=1750; bm.Width0=1; bm.Width1=1
-            bm.Name="BallPath"; bm.Parent=Workspace.Terrain
-            ba0.Parent=Workspace.Terrain; ba0.Name="BallPathAtt"; ba0.CFrame=ba0.Parent.CFrame:Inverse()*cf1
-            ba1.Parent=Workspace.Terrain; ba1.Name="BallPathAtt"; ba1.CFrame=ba1.Parent.CFrame:Inverse()*cf2
+local tfC=tabPages["Catching"]
+addSect(tfC,"-- Mags --")
+addSlider(tfC,"Mag Range",0,20,0,false,function(v) magsrange=v; if magson and showhitboxon then fitbalsize() end end)
+addToggle(tfC,"Mags",function(v) magson=v; if not v then removeHitboxes() elseif showhitboxon then footballhitbox() end end)
+addSlider(tfC,"Mag Delay (s)",0,1,0,true,function(v) magsdelay=v; magsdelayon=v>0 end)
+addDropdown(tfC,"Mag Mode",{"FTI","CFrame"},1,function(v) magmode=v end)
+addToggle(tfC,"Show Hitbox",function(v) showhitboxon=v; if not v then removeHitboxes() elseif magson then footballhitbox() end end)
+addToggle(tfC,"Auto Catch",function(v) autocatchon=v end)
+addSlider(tfC,"Catch Radius",1,25,10,false,function(v) catchdistance=v end)
+addSect(tfC,"-- Ball --")
+addToggle(tfC,"Ball Path",function(v)
+    ballpathOn=v
+    if not v then if ballpathConn then ballpathConn:Disconnect(); ballpathConn=nil end
+        for _,o in ipairs(WS.Terrain:GetChildren()) do if (o:IsA("Beam") and o.Name=="BallPath") or (o:IsA("Attachment") and o.Name=="BallPathAtt") then o:Destroy() end end
+    else if ballpathConn then ballpathConn:Disconnect() end
+        ballpathConn=WS.ChildAdded:Connect(function(ball)
+            if not (ball.Name:lower():find("football") and ball:IsA("BasePart")) then return end; task.wait()
+            local c0,c1,cf1,cf2=beamProj(Vector3.new(0,-28,0),ball.Velocity,ball.Position,10)
+            local bm=Instance.new("Beam"); local ba0=Instance.new("Attachment"); local ba1=Instance.new("Attachment")
+            bm.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,ballpathColor),ColorSequenceKeypoint.new(1,ballpathColor)}
+            bm.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.01,0),NumberSequenceKeypoint.new(0.99,0),NumberSequenceKeypoint.new(1,0.01)}
+            bm.CurveSize0=c0; bm.CurveSize1=c1; bm.Segments=1750; bm.Width0=1; bm.Width1=1; bm.Name="BallPath"; bm.Parent=WS.Terrain
+            ba0.Parent=WS.Terrain; ba0.Name="BallPathAtt"; ba0.CFrame=ba0.Parent.CFrame:Inverse()*cf1
+            ba1.Parent=WS.Terrain; ba1.Name="BallPathAtt"; ba1.CFrame=ba1.Parent.CFrame:Inverse()*cf2
             bm.Attachment0=ba0; bm.Attachment1=ba1
-            local hbc
-            hbc = RunService.Heartbeat:Connect(function()
-                if ball.Velocity.Magnitude < 1 then
-                    hbc:Disconnect()
-                    pcall(function() bm:Destroy(); ba0:Destroy(); ba1:Destroy() end)
-                end
-            end)
-            task.spawn(function()
-                repeat task.wait() until not ball.Parent
-                pcall(function() bm:Destroy(); ba0:Destroy(); ba1:Destroy() end)
-            end)
-        end)
-    end
-end)
-AddToggle(tfCatch, "Perfect Beam (catches)", false, function(v)
-    perfBeamEnabled = v
-    if v then perfBeam_start() else perfBeam_stop() end
-end)
-
-AddSection(tfCatch, "Speed")
-AddSlider(tfCatch, "Speed Value", 1, 12, 1, 1, function(v) speedValue = v/10 end)
-AddToggle(tfCatch, "CFrame Speed", false, function(v)
-    speedEnabled = v; if v then startMovementSystem() else stopMovementSystem() end
-end)
-
-AddSection(tfCatch, "Pull Vector")
-AddToggle(tfCatch, "Pull Vector", false, function(v) pullvector = v end)
-AddSlider(tfCatch, "Pull Speed", 1, 3, 1, 1, function(v) pullvectorpower = v end)
-AddSlider(tfCatch, "Pull Radius", 1, 25, 5, 1, function(v) pullvectordistance = v end)
+            local hbc; hbc=RunService.Heartbeat:Connect(function() if ball.Velocity.Magnitude<1 then hbc:Disconnect(); pcall(function() bm:Destroy();ba0:Destroy();ba1:Destroy() end) end end)
+            task.spawn(function() repeat task.wait() until not ball.Parent; pcall(function() bm:Destroy();ba0:Destroy();ba1:Destroy() end) end)
+            task.delay(15, function() pcall(function() bm:Destroy();ba0:Destroy();ba1:Destroy() end) end) end) end end)
+addToggle(tfC,"Perfect Beam",function(v) perfBeamEnabled=v; if v then perfBeam_start() else perfBeam_stop() end end)
+addSect(tfC,"-- Speed --")
+addSlider(tfC,"Speed",1,12,1,false,function(v) speedValue=v/10 end)
+addToggle(tfC,"CFrame Speed",function(v) speedEnabled=v; if v then startMov() else stopMov() end end)
+addSect(tfC,"-- Pull Vector --")
+addToggle(tfC,"Pull Vector",function(v) pullvector=v end)
+addSlider(tfC,"Pull Speed",1,3,1,false,function(v) pullvectorpower=v end)
+addSlider(tfC,"Pull Radius",1,25,5,false,function(v) pullvectordistance=v end)
 
 -- ================================================================
 -- PHYSICS TAB
 -- ================================================================
-local tfPhys = tabFrames["Physics"]
-AddSection(tfPhys, "Jump Power")
-AddToggle(tfPhys, "Jump Power Boost", false, function(v) jumpoweron = v end)
-AddSlider(tfPhys, "Jump Boost", 50, 65, 50, 1, function(v) jumpboost = v end)
+local tfP=tabPages["Physics"]
+addSect(tfP,"-- Jump --")
+addToggle(tfP,"Jump Power Boost",function(v) jumpoweron=v end)
+addSlider(tfP,"Jump Boost",50,65,50,false,function(v) jumpboost=v end)
+addSect(tfP,"-- Cooldown --")
+addToggle(tfP,"No Jump Cooldown",function(v) nojpcooldownon=v; if not v and Player.Character then local c=njcconnections[Player.Character]; if c then c:Disconnect(); njcconnections[Player.Character]=nil end elseif v and Player.Character then njc(Player.Character) end end)
+addSect(tfP,"-- World --")
+addToggle(tfP,"Delete OOB Parts",function(v) deleteOOBEnabled=v end)
+addSect(tfP,"-- Click Tackle --")
+addToggle(tfP,"Click Tackle",function(v) clicktackleon=v end)
+addSlider(tfP,"Tackle Range",1,15,5,false,function(v) clicktacklerange=v end)
 
-AddSection(tfPhys, "Jump Cooldown")
-AddToggle(tfPhys, "No Jump Cooldown", false, function(v)
-    nojpcooldownon = v
-    if not v and Player.Character then
-        local conn = njcconnections[Player.Character]
-        if conn then conn:Disconnect(); njcconnections[Player.Character] = nil end
-    elseif v and Player.Character then njc(Player.Character) end
-end)
-
-AddSection(tfPhys, "World")
-AddToggle(tfPhys, "Delete OOB Parts", false, function(v) deleteOOBEnabled = v end)
-
-AddSection(tfPhys, "Click Tackle")
-AddToggle(tfPhys, "Click Tackle", false, function(v) clicktackleon = v end)
-AddSlider(tfPhys, "Tackle Range", 1, 15, 5, 1, function(v) clicktacklerange = v end)
+addSect(tfP,"-- Movement --")
+addToggle(tfP,"Jump Power Boost",function(v) jumpoweron=v end)
+addSlider(tfP,"Jump Boost",50,65,50,false,function(v) jumpboost=v end)
+addToggle(tfP,"No Jump Cooldown",function(v) nojpcooldownon=v; if not v and Player.Character then local c=njcconnections[Player.Character]; if c then c:Disconnect(); njcconnections[Player.Character]=nil end elseif v and Player.Character then njc(Player.Character) end end)
+addSect(tfP,"-- Speed --")
+addToggle(tfP,"CFrame Speed",function(v) speedEnabled=v; if v then startMov() else stopMov() end end)
+addSlider(tfP,"Speed",1,12,1,false,function(v) speedValue=v/10 end)
 
 -- ================================================================
--- QB / THROW TAB
+-- QB TAB
 -- ================================================================
-local tfQB = tabFrames["QB / Throw"]
-AddSection(tfQB, "QB Aimbot")
-AddToggle(tfQB, "QB Aimbot Enabled", true, function(v)
-    qbEnabled = v
-    if not v then qb_beam.Enabled = false; qb_HL.Enabled = false; qb_gui.Enabled = false end
-end)
-AddLabel(tfQB, "KB:  M1 / Space = throw")
-AddLabel(tfQB, "KB:  Z fwd  X back  F lock")
-AddLabel(tfQB, "Ctrl: R2=throw R1/L1=cycle B=lock")
-AddLabel(tfQB, "Mobile:  tap  throw/cycle/lock btns")
-
-AddSection(tfQB, "QB Options")
-AddToggle(tfQB, "Auto Angle", true, function(v) qb_autoAngle = v end)
-AddSlider(tfQB, "Manual Angle (if off)", 1, 60, 25, 1, function(v) qb_manualAngle = v end)
-AddToggle(tfQB, "Auto Power", true, function(v) qb_autoPower = v end)
-AddToggle(tfQB, "Anti Out-Of-Bounds", true, function(v) qb_antiOOB = v end)
-
-AddSection(tfQB, "Trajectory")
-AddToggle(tfQB, "Trajectory Arc (kick)", true, function(v)
-    trajEnabled = v; if not v then traj_beam.Enabled = false end
-end)
+local tfQB=tabPages["QB"]
+addSect(tfQB,"-- QB Aimbot --")
+addToggle(tfQB,"QB Aimbot",function(v) qbEnabled=v; if not v then qb_beam.Enabled=false; qbHL.Enabled=false; qb_gui.Enabled=false end end)
+addInfo(tfQB,"Space/M1=throw | R=next receiver | G=prev receiver")
+addInfo(tfQB,"Z=next throw type | X=prev type | F=lock/unlock")
+addInfo(tfQB,"Controller: R2=throw | DPad Up/Dn=receiver | R1/L1=type")
+addSect(tfQB,"-- Options --")
+addToggle(tfQB,"Auto Angle",function(v) qb_autoAngle=v end)
+addSlider(tfQB,"Manual Angle",1,60,25,false,function(v) qb_manualAngle=v end)
+addToggle(tfQB,"Anti OOB",function(v) qb_antiOOB=v end)
+addToggle(tfQB,"Auto Power",function(v) qb_autoPower=v end)
+addSect(tfQB,"-- Lead Distance --")
+addInfo(tfQB,"0=pure physics. Raise if underthrown, lower if overthrown.")
+addSlider(tfQB,"Dime Lead",0,20,6,true,function(v) qb_lead.Dime=v end)
+addSlider(tfQB,"Mag Lead",0,20,6,true,function(v) qb_lead.Mag=v end)
+addSlider(tfQB,"Dive Lead",0,20,8,true,function(v) qb_lead.Dive=v end)
+addSlider(tfQB,"Jump Lead",0,20,5,true,function(v) qb_lead.Jump=v end)
+addSlider(tfQB,"Slant Lead",0,20,5,true,function(v) qb_lead.Slant=v end)
+addSlider(tfQB,"Bullet Lead",0,15,3,true,function(v) qb_lead.Bullet=v end)
+addSlider(tfQB,"Lob Lead",0,25,10,true,function(v) qb_lead.Lob=v end)
+addSlider(tfQB,"Screen Lead",0,10,2,true,function(v) qb_lead.Screen=v end)
 
 -- ================================================================
 -- KICKER TAB
 -- ================================================================
-local tfKick = tabFrames["Kicker"]
-AddSection(tfKick, "Auto Kicker")
-AddToggle(tfKick, "Auto Kicker", false, function(v) kickerAutoEnabled = v end)
-AddSlider(tfKick, "Kicker Power %", 1, 100, 95, 1, function(v) kickerPower = v end)
-AddSlider(tfKick, "Kicker Accuracy %", 1, 100, 75, 1, function(v) kickerAcc = v end)
-AddLabel(tfKick, "Opens KickerGui automatically")
-AddLabel(tfKick, "and clicks at set thresholds.")
-
-AddSection(tfKick, "Kick Extender")
-AddToggle(tfKick, "Kick Extender", false, function(v)
-    kickExtendEnabled = v
-    if v then startKickExtend() else stopKickExtend() end
-end)
-AddSlider(tfKick, "Hitbox Size", 5, 30, 15, 1, function(v) kickExtendSize = v end)
-AddLabel(tfKick, "Enlarges kicking hitbox part when it spawns.")
+local tfK=tabPages["Kicker"]
+addSect(tfK,"-- Auto Kicker --")
+addToggle(tfK,"Auto Kicker",function(v) kickerAutoEnabled=v end)
+addSlider(tfK,"Kicker Power %",1,100,95,false,function(v) kickerPower=v end)
+addSlider(tfK,"Kicker Accuracy %",1,100,75,false,function(v) kickerAcc=v end)
+addInfo(tfK,"Power 100 = max power (clicks near bottom of bar). Lower = less power.")
+addInfo(tfK,"Acc 100 = clicks at same point as power bar. Lower = clicks earlier on accuracy bar.")
+addInfo(tfK,"Works in live games AND practice mode.")
+addSect(tfK,"-- Kick Extender --")
+addToggle(tfK,"Kick Extender",function(v) kickExtendEnabled=v; if v then startKE() else stopKE() end end)
+addSlider(tfK,"Hitbox Size",5,30,15,false,function(v) kickExtendSize=v end)
+addInfo(tfK,"Enlarges kicking hitbox when it spawns.")
 
 -- ================================================================
 -- TACKLE TAB
 -- ================================================================
-local tfTack = tabFrames["Tackle"]
-AddSection(tfTack, "Tackle Aimbot")
-AddToggle(tfTack, "Tackle Aimbot", false, function(v) tackleAimbotEnabled = v end)
-AddSlider(tfTack, "Aimbot Range", 5, 40, 15, 1, function(v) tackleAimbotRange = v end)
-AddLabel(tfTack, "M1 / Touch / R2 = teleport CatchRight onto carrier.")
+local tfT=tabPages["Tackle"]
+addSect(tfT,"-- Tackle Aimbot --")
+addToggle(tfT,"Tackle Aimbot",function(v) tackleAimbotEnabled=v end)
+addSlider(tfT,"Aimbot Range",5,40,15,false,function(v) tackleAimbotRange=v end)
+addInfo(tfT,"M1/Touch/R2 teleports CatchRight onto carrier.")
+addSect(tfT,"-- Click Tackle --")
+addToggle(tfT,"Click Tackle",function(v) clicktackleon=v end)
+addSlider(tfT,"Click Range",1,15,5,false,function(v) clicktacklerange=v end)
+addInfo(tfT,"TP your HRP onto nearest ball carrier on click.")
+addSect(tfT,"-- Tackle Reach --")
+addToggle(tfT,"Tackle Reach",function(v) tackleReachEnabled=v end)
+addSlider(tfT,"Reach Range",5,50,15,false,function(v) tackleReachRange=v end)
+addInfo(tfT,"FireTouchInterest on carrier parts within range.")
+addSect(tfT,"-- Block Reach --")
+addToggle(tfT,"Block Reach",function(v) blockReachEnabled=v; refreshBR() end)
+addSlider(tfT,"Block Size",5,60,20,false,function(v) blockReachSize=v; if blockReachEnabled then refreshBR() end end)
+addSlider(tfT,"Block Opacity",0,10,5,false,function(v) blockReachOpacity=v/10; if blockReachEnabled then refreshBR() end end)
 
-AddSection(tfTack, "Click Tackle")
-AddToggle(tfTack, "Click Tackle (TP body)", false, function(v) clicktackleon = v end)
-AddSlider(tfTack, "Click Tackle Range", 1, 15, 5, 1, function(v) clicktacklerange = v end)
-AddLabel(tfTack, "Teleports your HRP onto nearest ball carrier on click.")
 
-AddSection(tfTack, "Tackle Reach")
-AddToggle(tfTack, "Tackle Reach", false, function(v) tackleReachEnabled = v end)
-AddSlider(tfTack, "Reach Range", 5, 50, 15, 1, function(v) tackleReachRange = v end)
-AddLabel(tfTack, "FireTouchInterest on ball carrier parts within range.")
 
-AddSection(tfTack, "Block Reach")
-AddToggle(tfTack, "Block Reach", false, function(v)
-    blockReachEnabled = v; refreshBlockReach()
-end)
-AddSlider(tfTack, "Block Reach Size", 5, 60, 20, 1, function(v)
-    blockReachSize = v; if blockReachEnabled then refreshBlockReach() end
-end)
-AddSlider(tfTack, "Block Reach Opacity (0=solid)", 0, 10, 5, 1, function(v)
-    blockReachOpacity = v/10; if blockReachEnabled then refreshBlockReach() end
-end)
 
 -- ================================================================
--- MOVEMENT TAB
+-- NAME ESP
 -- ================================================================
-local tfMove = tabFrames["Movement"]
-AddSection(tfMove, "Jump")
-AddToggle(tfMove, "Jump Power Boost", false, function(v) jumpoweron = v end)
-AddSlider(tfMove, "Jump Boost", 50, 65, 50, 1, function(v) jumpboost = v end)
+local espEnabled = false
+local espBills   = {}   -- [player] = BillboardGui
 
-AddSection(tfMove, "Speed")
-AddToggle(tfMove, "CFrame Speed", false, function(v)
-    speedEnabled = v; if v then startMovementSystem() else stopMovementSystem() end
-end)
-AddSlider(tfMove, "Speed", 1, 12, 1, 1, function(v) speedValue = v/10 end)
+-- Sizing: mobile screens are smaller so we use bigger text (easier to read)
+-- but shorter draw distance to keep it uncluttered
+local ESP_MOB_TEXT  = 15   -- textsize on mobile
+local ESP_PC_TEXT   = 13   -- textsize on PC
+local ESP_MOB_DIST  = 180  -- studs, mobile (closer = less clutter on small screen)
+local ESP_PC_DIST   = 350  -- studs, PC (wider FOV, more room)
+local ESP_MOB_SIZE  = UDim2.new(0,90,0,26)   -- BillboardGui size mobile
+local ESP_PC_SIZE   = UDim2.new(0,110,0,22)  -- BillboardGui size PC
+local ESP_Y_OFFSET  = 3.2  -- studs above HRP
 
-AddSection(tfMove, "Jump Cooldown")
-AddToggle(tfMove, "No Jump Cooldown", false, function(v)
-    nojpcooldownon = v
-    if not v and Player.Character then
-        local conn = njcconnections[Player.Character]
-        if conn then conn:Disconnect(); njcconnections[Player.Character] = nil end
-    elseif v and Player.Character then njc(Player.Character) end
-end)
+-- Team colours: try to read from team, fallback to white vs red
+local function espColor(plr)
+    if plr==Player then return Color3.fromRGB(80,220,80) end  -- self = green
+    local tm=plr.Team; local myTm=Player.Team
+    if tm and myTm then
+        if tm==myTm then return Color3.fromRGB(80,180,255) end  -- teammate = blue
+        return Color3.fromRGB(255,80,80)                        -- enemy = red
+    end
+    return Color3.fromRGB(255,255,255)
+end
+
+local function makeESPBill(plr)
+    if espBills[plr] then return end
+    local char=plr.Character; if not char then return end
+    local hrp=char:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+
+    local bill=Instance.new("BillboardGui")
+    bill.Name="KasenESP"
+    bill.Adornee=hrp
+    bill.AlwaysOnTop=true
+    bill.Size=isMobile and ESP_MOB_SIZE or ESP_PC_SIZE
+    bill.StudsOffset=Vector3.new(0, ESP_Y_OFFSET, 0)
+    bill.MaxDistance=isMobile and ESP_MOB_DIST or ESP_PC_DIST
+    bill.ResetOnSpawn=false
+    bill.Parent=CoreGui
+
+    -- Name label
+    local nameLbl=Instance.new("TextLabel",bill)
+    nameLbl.Name="NameLbl"
+    nameLbl.BackgroundTransparency=1
+    nameLbl.Size=UDim2.new(1,0,0.65,0)
+    nameLbl.Font=Enum.Font.GothamBold
+    nameLbl.TextSize=isMobile and ESP_MOB_TEXT or ESP_PC_TEXT
+    nameLbl.TextColor3=espColor(plr)
+    nameLbl.TextStrokeTransparency=0.4
+    nameLbl.TextStrokeColor3=Color3.fromRGB(0,0,0)
+    nameLbl.Text=plr.DisplayName~="" and plr.DisplayName or plr.Name
+    nameLbl.TextScaled=false
+
+    -- Distance label (below name)
+    local distLbl=Instance.new("TextLabel",bill)
+    distLbl.Name="DistLbl"
+    distLbl.BackgroundTransparency=1
+    distLbl.Position=UDim2.new(0,0,0.62,0)
+    distLbl.Size=UDim2.new(1,0,0.38,0)
+    distLbl.Font=Enum.Font.Gotham
+    distLbl.TextSize=isMobile and (ESP_MOB_TEXT-4) or (ESP_PC_TEXT-3)
+    distLbl.TextColor3=Color3.fromRGB(180,180,180)
+    distLbl.TextStrokeTransparency=0.5
+    distLbl.TextStrokeColor3=Color3.fromRGB(0,0,0)
+    distLbl.Text=""
+    distLbl.TextScaled=false
+
+    espBills[plr]={bill=bill, nameLbl=nameLbl, distLbl=distLbl}
+end
+
+local function removeESPBill(plr)
+    local e=espBills[plr]
+    if e then
+        pcall(function() e.bill:Destroy() end)
+        espBills[plr]=nil
+    end
+end
+
+local function espClearAll()
+    for plr,_ in pairs(espBills) do removeESPBill(plr) end
+end
+
+local function espRebuild()
+    espClearAll()
+    if not espEnabled then return end
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=Player then makeESPBill(plr) end
+    end
+end
+
+-- Update distance labels every heartbeat, re-attach if char respawned
+local espConn=nil
+local function espStart()
+    if espConn then return end
+    espRebuild()
+    -- When a new player joins, add their ESP
+    Players.PlayerAdded:Connect(function(plr)
+        if not espEnabled then return end
+        plr.CharacterAdded:Connect(function()
+            task.wait(0.5)
+            removeESPBill(plr)
+            if espEnabled then makeESPBill(plr) end
+        end)
+        task.wait(0.5)
+        if espEnabled then makeESPBill(plr) end
+    end)
+    Players.PlayerRemoving:Connect(removeESPBill)
+    -- Respawn handling for existing players
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=Player then
+            plr.CharacterAdded:Connect(function()
+                task.wait(0.5)
+                removeESPBill(plr)
+                if espEnabled then makeESPBill(plr) end
+            end)
+        end
+    end
+    espConn=RunService.Heartbeat:Connect(function()
+        if not espEnabled then return end
+        local myHrp=Hrp
+        for plr,e in pairs(espBills) do
+            if not plr.Parent then removeESPBill(plr); continue end
+            local char=plr.Character
+            local hrp=char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                -- char not loaded yet, skip
+                e.bill.Enabled=false; continue
+            end
+            -- Re-adorn if character changed (respawn)
+            if e.bill.Adornee~=hrp then e.bill.Adornee=hrp end
+            e.bill.Enabled=true
+            -- Update colour in case team changed
+            e.nameLbl.TextColor3=espColor(plr)
+            -- Distance
+            if myHrp then
+                local dist=math.floor((hrp.Position-myHrp.Position).Magnitude)
+                e.distLbl.Text=dist.."st"
+            end
+        end
+    end)
+end
+
+local function espStop()
+    if espConn then espConn:Disconnect(); espConn=nil end
+    espClearAll()
+end
+
+-- ================================================================
+-- TOGGLE + UNLOAD  (defined here so Misc tab button can reference them)
+-- ================================================================
+local _uiTweening = false
+local function toggleUI()
+    if _uiTweening then return end
+    _uiTweening = true
+    local opening = not MainFrame.Visible
+    if opening then
+        MainFrame.Visible = true
+        MainFrame.BackgroundTransparency = 1
+        MainFrame.Size = UDim2.new(0, MainFrame.AbsoluteSize.X * 0.88, 0, MainFrame.AbsoluteSize.Y * 0.88)
+        MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        TS:Create(MainFrame, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 0,
+            Size = UDim2.new(0, 420, 0, 520)
+        }):Play()
+    else
+        local tw = TS:Create(MainFrame, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 420*0.90, 0, 520*0.90)
+        })
+        tw:Play()
+        tw.Completed:Connect(function()
+            MainFrame.Visible = false
+            MainFrame.BackgroundTransparency = 0
+            MainFrame.Size = UDim2.new(0, 420, 0, 520)
+        end)
+    end
+    ToggleBtn.Text = opening and "Close" or "Kasen"
+    task.delay(0.2, function() _uiTweening = false end)
+end
+
+local function unloadHub()
+    -- Kill all feature flags
+    qbEnabled=false; speedEnabled=false; magson=false; autocatchon=false
+    ballpathOn=false; perfBeamEnabled=false; pullvector=false
+    deleteOOBEnabled=false; jumpoweron=false; nojpcooldownon=false
+    clicktackleon=false; tackleAimbotEnabled=false; tackleReachEnabled=false
+    blockReachEnabled=false; kickerAutoEnabled=false; kickExtendEnabled=false
+    antiLagEnabled=false; espEnabled=false
+
+    -- Stop running loops/connections
+    pcall(espStop)
+    pcall(perfBeam_stop)
+    pcall(stopMov)
+    pcall(stopKE)
+    if tAC then pcall(function() tAC:Disconnect() end) end
+
+    -- Destroy world objects (beams, attachments, hitbox parts)
+    pcall(function()
+        for _,v in pairs(WS.Terrain:GetChildren()) do
+            if (v:IsA("Beam")       and v.Name:find("Kasen"))
+            or (v:IsA("Attachment") and v.Name:find("Kasen"))
+            or (v:IsA("Beam")       and (v.Name=="PerfHitbox" or v.Name=="BallPath"))
+            or (v:IsA("Attachment") and v.Name=="BallPathAtt") then
+                v:Destroy()
+            end
+        end
+    end)
+    pcall(removeHitboxes)
+
+    -- Destroy all hub GUI instances
+    pcall(function() qb_beam.Enabled=false; qb_beam:Destroy() end)
+    pcall(function() qbHL.Enabled=false;    qbHL:Destroy()    end)
+    pcall(function() qba0:Destroy() end)
+    pcall(function() qba1:Destroy() end)
+    pcall(function() qb_gui:Destroy() end)
+    pcall(function() ScreenGui:Destroy() end)   -- destroys MainFrame + ToggleBtn too
+
+    print("[Kasen Hub] Unloaded.")
+end
+
 
 -- ================================================================
 -- MISC TAB
 -- ================================================================
-local tfMisc = tabFrames["Misc"]
-AddSection(tfMisc, "Anti-Lag")
-AddToggle(tfMisc, "Anti-Lag (apply once)", false, function(v)
-    antiLagEnabled = v
-    if v then applyAntiLag() end
+local tfX=tabPages["Misc"]
+addSect(tfX,"-- ESP --")
+addToggle(tfX,"Name ESP",function(v) espEnabled=v; if v then espStart() else espStop() end end)
+addInfo(tfX,"Shows player names + distance above heads.")
+addSect(tfX,"-- Performance --")
+addToggle(tfX,"Anti-Lag (apply once)",function(v) antiLagEnabled=v; if v then applyAL() end end)
+addInfo(tfX,"Sets all BaseParts to SmoothPlastic.")
+addSect(tfX,"-- World --")
+addToggle(tfX,"Delete OOB Parts",function(v) deleteOOBEnabled=v end)
+addSect(tfX,"-- Script --")
+local unloadBtn=Instance.new("TextButton",tfX)
+unloadBtn.BackgroundColor3=Color3.fromRGB(120,30,30); unloadBtn.BorderSizePixel=0
+unloadBtn.Size=UDim2.new(1,0,0,44); unloadBtn.Font=Enum.Font.GothamBold
+unloadBtn.Text="Unload Kasen Hub"; unloadBtn.TextColor3=Color3.fromRGB(255,255,255); unloadBtn.TextSize=14
+Instance.new("UICorner",unloadBtn).CornerRadius=UDim.new(0,4)
+hover(unloadBtn,Color3.fromRGB(120,30,30),Color3.fromRGB(180,40,40))
+unloadBtn.MouseButton1Click:Connect(unloadHub)
+
+-- ================================================================
+-- CONNECTIONS
+-- ================================================================
+
+-- Smooth open/close with scale tween
+local _uiOpen = true
+local function openUI()
+    _uiOpen = true
+    MainFrame.Visible = true
+    MainFrame.Size = UDim2.new(0, GW * 0.88, 0, GH * 0.88)
+    TS:Create(MainFrame, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, GW, 0, GH)
+    }):Play()
+    TS:Create(MainFrame, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play()
+    ToggleBtn.Text = "Close"
+end
+local function closeUI()
+    _uiOpen = false
+    TS:Create(MainFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, GW * 0.88, 0, GH * 0.88),
+        BackgroundTransparency = 0.15
+    }):Play()
+    task.delay(0.15, function() if not _uiOpen then MainFrame.Visible = false end end)
+    ToggleBtn.Text = "Kasen"
+end
+
+CloseBtn.MouseButton1Click:Connect(closeUI)
+ToggleBtn.MouseButton1Click:Connect(function()
+    if _uiOpen then closeUI() else openUI() end
 end)
-AddLabel(tfMisc, "Sets all BaseParts to SmoothPlastic to reduce lag.")
 
-AddSection(tfMisc, "World")
-AddToggle(tfMisc, "Delete OOB Parts", false, function(v) deleteOOBEnabled = v end)
-
-AddSection(tfMisc, "Pull Vector")
-AddToggle(tfMisc, "Pull Vector", false, function(v) pullvector = v end)
-AddSlider(tfMisc, "Pull Speed", 1, 3, 1, 1, function(v) pullvectorpower = v end)
-AddSlider(tfMisc, "Pull Radius", 1, 25, 5, 1, function(v) pullvectordistance = v end)
-
--- ================================================================
--- ACTIVATE FIRST TAB
--- ================================================================
 switchTab("Catching")
+ToggleBtn.Text="Close"  -- open by default
 
-print("Aethel Hub v10 Loaded! E/Space=throw · Q/Tab=cycle · G=lock")
+print("[Kasen Hub] v1 loaded. All features OFF by default.")
